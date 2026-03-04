@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head><link rel="stylesheet" href="../static/css/style.css"></head>
+<body>
+    <nav class="navbar"><a href="/" class="logo">ADMIN.VAULT</a><a href="/">Exit</a></nav>
+    <div class="auth-container">
+        <div class="auth-card">
+            <h3>Upload New Resource</h3>
+            <form method="post" enctype="multipart/form-data">
+                <select name="section">
+                    <option value="notes">Notes Section</option>
+                    <option value="pyq">PYQ Section</option>
+                </select>
+                <input type="text" name="subject" placeholder="Subject Name" required>
+                <input type="file" name="file" required>
+                <button type="submit" class="btn-premium" style="width:100%">Upload to Database</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

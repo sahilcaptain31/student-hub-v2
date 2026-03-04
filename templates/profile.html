@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="../static/css/style.css">
+    <style>
+        .profile-container { max-width: 800px; margin: 50px auto; padding: 20px; }
+        .profile-header { 
+            background: var(--glass); border: 1px solid var(--primary); 
+            padding: 40px; border-radius: 30px; text-align: center;
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.2);
+        }
+        .avatar-circle {
+            width: 100px; height: 100px; background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;
+            font-size: 2.5rem; font-weight: bold; color: black; box-shadow: 0 0 20px var(--primary);
+        }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 30px; }
+        .stat-card { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; border: 1px solid #333; }
+        .badge-box { margin-top: 30px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 15px; }
+        .badge-icon { font-size: 1.5rem; margin: 5px; filter: grayscale(1); transition: 0.3s; opacity: 0.3; }
+        .badge-unlocked { filter: grayscale(0); opacity: 1; transform: scale(1.1); }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="logo">HUB.OS</a>
+        <div class="nav-links"><a href="/">Dashboard</a><a href="/logout" style="color:#f87171;">Exit System</a></div>
+    </nav>
+
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="avatar-circle" id="avatarChar">U</div>
+            <h1 style="font-family:'Orbitron'; margin-bottom: 5px;">{{ session['user'] }}</h1>
+            <p id="rankName" style="color:var(--secondary); letter-spacing: 3px; font-size: 0.8rem;">LOADING RANK...</p>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <small style="opacity:0.6;">CURRENT LEVEL</small>
+                    <h2 id="dispLvl" style="color:var(--primary);">1</h2>
+                </div>
+                <div class="stat-card">
+                    <small style="opacity:0.6;">TOTAL XP</small>
+                    <h2 id="dispXP" style="color:var(--primary);">0</h2>
+                </div>
+                <div class="stat-card">
+                    <small style="opacity:0.6;">ROLE</small>
+                    <h2 style="color:var(--secondary); text-transform: uppercase;">{{ session['role'] }}</h2>
+                </div>
+            </div>
+
+            <div class="badge-box">
+                <h4 style="margin-bottom:15px; font-size:0.8rem; opacity:0.8;">MILITARY_BADGES_UNLOCKED</h4>
+                <div style="display:flex; justify-content:center; gap:15px;">
+                    <span class="badge-icon" id="owl" title="Night Owl (Study at Night)">🦉</span>
+                    <span class="badge-icon" id="scholar" title="Scholar (Reach Lvl 5)">🎓</span>
+                    <span class="badge-icon" id="warrior" title="Warrior (Reach Lvl 10)">⚔️</span>
+                    <span class="badge-icon" id="legend" title="Legend (Reach Lvl 20)">👑</span>
+                </div>
+            </div>
+            
+            <button onclick="location.href='/'" class="btn-premium" style="margin-top:30px; width:200px;">BACK TO HUB</button>
+        </div>
+    </div>
+
+    <script>
+        // Load Data from LocalStorage
+        let xp = parseInt(localStorage.getItem('hXP')) || 0;
+        let lvl = parseInt(localStorage.getItem('hLVL')) || 1;
+        let user = "{{ session['user'] }}";
+
+        // Update UI
+        document.getElementById('avatarChar').innerText = user.charAt(0).toUpperCase();
+        document.getElementById('dispLvl').innerText = lvl;
+        document.getElementById('dispXP').innerText = xp;
+
+        // Rank Logic
+        let r = "Novice Explorer";
+        if(lvl >= 5) { r = "Knowledge Monk"; document.getElementById('scholar').classList.add('badge-unlocked'); }
+        if(lvl >= 10) { r = "Academic Warrior"; document.getElementById('warrior').classList.add('badge-unlocked'); }
+        if(lvl >= 20) { r = "Study Legend"; document.getElementById('legend').classList.add('badge-unlocked'); }
+        document.getElementById('rankName').innerText = r;
+
+        // Night Owl Check (Active between 11PM and 4AM)
+        let hour = new Date().getHours();
+        if(hour >= 23 || hour <= 4) {
+            document.getElementById('owl').classList.add('badge-unlocked');
+        }
+    </script>
+</body>
+</html>

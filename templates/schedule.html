@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="../static/css/style.css">
+    <style>
+        .modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000; backdrop-filter:blur(5px); }
+        .edit-modal { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:var(--card); padding:30px; border-radius:25px; border:1px solid var(--primary); z-index:1001; width:350px; }
+        .task-item { background:rgba(255,255,255,0.05); padding:15px; border-radius:15px; margin-bottom:10px; border-left:4px solid var(--secondary); cursor:pointer; }
+        .task-item.completed { opacity:0.5; border-left-color:#4ade80; text-decoration:line-through; }
+    </style>
+</head>
+<body>
+    <nav class="navbar"><a href="/" class="logo">HUB.PLANNER</a><a href="/">Back</a></nav>
+
+    <div class="modal-overlay" id="overlay" onclick="closeModal()"></div>
+    <div class="edit-modal" id="editModal">
+        <h3 style="color:var(--primary); margin-bottom:15px;">Edit Your Goal</h3>
+        <input type="text" id="editTitle" placeholder="Goal Name">
+        <div style="display:grid; gap:10px; margin-top:20px;">
+            <button class="btn-premium" onclick="saveEdit()">SAVE CHANGES</button>
+            <button class="btn-premium" onclick="toggleComplete()" style="background:#4ade80;">COMPLETE/UNDO</button>
+            <button class="btn-premium" onclick="deleteTask()" style="background:#f87171;">DELETE TASK</button>
+        </div>
+    </div>
+
+    <div style="max-width: 1000px; margin: 0 auto; padding: 40px 20px;">
+        <div class="grid" style="grid-template-columns: 1.2fr 0.8fr;">
+            
+            <div class="card" style="text-align:left;">
+                <h3>📌 My Goals</h3>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="taskInput" placeholder="New Task...">
+                    <input type="date" id="dateInput" style="width:150px;">
+                </div>
+                <button class="btn-premium" onclick="addTask()" style="width:100%; margin-top:10px;">ADD TO HUB</button>
+                <div id="taskList" style="margin-top:20px;"></div>
+            </div>
+
+            <div class="card">
+                <h3>⏳ Exam Countdown</h3>
+                <input type="datetime-local" id="examDate" onchange="startExamTimer()" style="font-size:0.8rem;">
+                <div id="countdown" style="font-family:'Orbitron'; font-size:1.8rem; color:var(--primary); margin:20px 0;">00d 00h 00m</div>
+                <p style="font-size:0.7rem; opacity:0.5;">Focus on the target.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTaskEl = null;
+
+        function addTask() {
+            let t = document.getElementById('taskInput').value;
+            let d = document.getElementById('dateInput').value;
+            if(!t || !d) return;
+
+            let div = document.createElement('div');
+            div.className = "task-item";
+            div.innerHTML = `<strong>${t}</strong><br><small>Due: ${d}</small>`;
+            div.onclick = function() { openEditModal(this, t); };
+            document.getElementById('taskList').appendChild(div);
+            document.getElementById('taskInput').value = "";
+        }
+
+        function openEditModal(el, title) {
+            currentTaskEl = el;
+            document.getElementById('editTitle').value = title;
+            document.getElementById('editModal').style.display = "block";
+            document.getElementById('overlay').style.display = "block";
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').style.display = "none";
+            document.getElementById('overlay').style.display = "none";
+        }
+
+        function saveEdit() {
+            let newT = document.getElementById('editTitle').value;
+            currentTaskEl.querySelector('strong').innerText = newT;
+            closeModal();
+        }
+
+        function toggleComplete() { currentTaskEl.classList.toggle('completed'); closeModal(); }
+        function deleteTask() { currentTaskEl.remove(); closeModal(); }
+
+        function startExamTimer() {
+            let target = new Date(document.getElementById('examDate').value).getTime();
+            setInterval(() => {
+                let now = new Date().getTime();
+                let diff = target - now;
+                if(diff < 0) return;
+                let d = Math.floor(diff / (1000*60*60*24));
+                let h = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+                let m = Math.floor((diff % (1000*60*60)) / (1000*60));
+                document.getElementById('countdown').innerText = `${d}d ${h}h ${m}m`;
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

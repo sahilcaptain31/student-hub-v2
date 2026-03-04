@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head><link rel="stylesheet" href="../static/css/style.css"></head>
+<body>
+    <nav class="navbar"><a href="/" class="logo">HUB.TOOLS</a><a href="/">Back</a></nav>
+
+    <div style="max-width: 1000px; margin: 0 auto; padding: 40px 20px;">
+        <div class="grid" style="grid-template-columns: repeat(2, 1fr);">
+            
+            <div class="card">
+                <h3 style="color:var(--primary);">Focus Timer</h3>
+                <div class="timer-display" id="timer">25:00</div>
+                <input type="number" id="customMin" placeholder="Set Minutes" style="text-align:center;">
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                    <button class="btn-premium" onclick="startTimer()" style="flex:1;">START</button>
+                    <button class="btn-premium" onclick="resetTimer()" style="background:#444; flex:1;">RESET</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 style="color:var(--secondary);">Bunk Meter</h3>
+                <input type="number" id="t" placeholder="Total Classes">
+                <input type="number" id="p" placeholder="Attended">
+                <button class="btn-premium" onclick="att()" style="width:100%;">Check %</button>
+                <h4 id="res2" style="margin-top:15px; font-family:'Orbitron';"></h4>
+            </div>
+
+            <div class="card" style="grid-column: span 2; text-align: left;">
+                <h3 style="color:var(--primary);">Dynamic CGPA Auditor</h3>
+                <p style="font-size:0.8rem; opacity:0.6; margin-bottom:15px;">Select semesters and enter your percentages.</p>
+                
+                <label style="font-size:0.8rem;">How many semesters?</label>
+                <select id="semCount" onchange="generateSemInputs()" style="margin-bottom:20px;">
+                    <option value="0">Select...</option>
+                    <option value="1">1 Semester</option>
+                    <option value="2">2 Semesters</option>
+                    <option value="4">4 Semesters (2 Years)</option>
+                    <option value="6">6 Semesters (3 Years)</option>
+                    <option value="8">8 Semesters (4 Years)</option>
+                </select>
+
+                <div id="semInputs" style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;"></div>
+                
+                <button id="calcBtn" class="btn-premium" onclick="calculateFinalCGPA()" style="width:100%; margin-top:20px; display:none;">CALCULATE CGPA</button>
+                
+                <div id="cgpaRes" style="margin-top:20px; display:none; padding:20px; border:1px solid var(--primary); border-radius:15px; text-align:center;">
+                    <h2 id="finalVal" style="font-family:'Orbitron'; color:var(--primary);"></h2>
+                    <p style="font-size:0.8rem; opacity:0.7;">Based on Standard Formula (Percentage / 9.5)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function generateSemInputs() {
+            const count = document.getElementById('semCount').value;
+            const container = document.getElementById('semInputs');
+            container.innerHTML = "";
+            if(count > 0) {
+                for(let i=1; i<=count; i++) {
+                    container.innerHTML += `<input type="number" class="sem-p" placeholder="Sem ${i} %" step="0.01">`;
+                }
+                document.getElementById('calcBtn').style.display = "block";
+            } else {
+                document.getElementById('calcBtn').style.display = "none";
+            }
+        }
+
+        function calculateFinalCGPA() {
+            const inputs = document.querySelectorAll('.sem-p');
+            let totalPerc = 0;
+            inputs.forEach(input => totalPerc += (parseFloat(input.value) || 0));
+            let avgPerc = totalPerc / inputs.length;
+            let cgpa = avgPerc / 9.5;
+            document.getElementById('cgpaRes').style.display = "block";
+            document.getElementById('finalVal').innerText = "FINAL CGPA: " + cgpa.toFixed(2);
+        }
+
+        // Timer Logic
+        let timer; let timeLeft;
+        function startTimer() {
+            if(timer) return;
+            let m = document.getElementById('customMin').value;
+            if(!timeLeft) timeLeft = (m ? m : 25) * 60;
+            timer = setInterval(() => {
+                timeLeft--;
+                let mins = Math.floor(timeLeft/60); let secs = timeLeft%60;
+                document.getElementById('timer').innerText = `${mins}:${secs<10?'0':''}${secs}`;
+                if(timeLeft <= 0) { clearInterval(timer); timer=null; alert("Session Over!"); }
+            }, 1000);
+        }
+        function resetTimer() { clearInterval(timer); timer=null; timeLeft=null; document.getElementById('timer').innerText="25:00"; }
+        function att() {
+            let t = parseInt(document.getElementById('t').value); let p = parseInt(document.getElementById('p').value);
+            let res = (p/t)*100; document.getElementById('res2').innerText = res.toFixed(1) + "% " + (res<75?"⚠️ Low":"✅ Safe");
+        }
+    </script>
+</body>
+</html>

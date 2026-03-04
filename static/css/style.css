@@ -1,0 +1,263 @@
+/* STUDENT HUB v2.0 - PREMIUM PROFESSIONAL THEME
+   Author: Gemini AI
+   Features: Glassmorphism, Responsive Grid, Cyber Gradients
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Orbitron:wght@500;700&display=swap');
+
+:root {
+    --bg: #0b111a;
+    --card: rgba(22, 28, 39, 0.7);
+    --primary: #3b82f6;
+    --secondary: #8b5cf6;
+    --text: #f8fafc;
+    --text-dim: #94a3b8;
+    --border: rgba(255, 255, 255, 0.08);
+    --glass: rgba(255, 255, 255, 0.03);
+}
+
+/* Base Setup */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+body {
+    background-color: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+    /* Subtle Animated Background */
+    background-image: 
+        radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.1) 0, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.1) 0, transparent 50%);
+    line-height: 1.6;
+}
+
+/* Navbar Styling */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 8%;
+    background: rgba(11, 17, 26, 0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.logo {
+    font-family: 'Orbitron';
+    font-weight: 700;
+    color: var(--primary);
+    text-decoration: none;
+    font-size: 1.4rem;
+    letter-spacing: 1px;
+}
+
+.nav-links a {
+    color: var(--text);
+    text-decoration: none;
+    margin-left: 1.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: 0.3s;
+    opacity: 0.7;
+}
+
+.nav-links a:hover {
+    opacity: 1;
+    color: var(--primary);
+}
+
+/* Premium Button Logic */
+.btn-premium {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-decoration: none;
+    display: inline-block;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2);
+}
+
+.btn-premium:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
+}
+
+/* Compact Auth Cards (Login/Register) */
+.auth-container {
+    height: 90vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.auth-card {
+    background: var(--card);
+    backdrop-filter: blur(15px);
+    padding: 2.5rem;
+    border-radius: 24px;
+    border: 1px solid var(--border);
+    width: 100%;
+    max-width: 380px;
+    text-align: center;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+/* Hero Section */
+.hero {
+    text-align: center;
+    padding: 100px 5% 60px;
+}
+
+.hero h1 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 1rem;
+}
+
+.hero span {
+    background: linear-gradient(to right, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Motivational Quote Box */
+.motivation-box {
+    background: var(--glass);
+    padding: 15px 25px;
+    border-radius: 50px;
+    display: inline-block;
+    margin-bottom: 2rem;
+    border: 1px solid var(--border);
+    font-size: 0.9rem;
+    color: var(--text-dim);
+}
+
+/* Responsive Grid & Content Cards */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    padding: 0 8% 80px;
+}
+
+.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 2.5rem;
+    border-radius: 24px;
+    transition: 0.4s;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    border-color: var(--primary);
+    background: rgba(59, 130, 246, 0.03);
+}
+
+/* Forms & Inputs */
+input, select {
+    width: 100%;
+    padding: 14px 18px;
+    margin: 10px 0;
+    background: #1c2533;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: white;
+    font-size: 0.95rem;
+    transition: 0.3s;
+}
+
+input:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+/* Tools Page Special Elements */
+.timer-display {
+    font-family: 'Orbitron';
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 20px 0;
+    text-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+}
+
+.deadline-item {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 12px 15px;
+    border-radius: 12px;
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    border: 1px solid var(--border);
+}
+
+/* Badges */
+.badge {
+    background: var(--primary);
+    font-size: 0.65rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    vertical-align: middle;
+    margin-left: 5px;
+    text-transform: uppercase;
+}
+
+/* Responsive Fixes */
+@media (max-width: 768px) {
+    .hero h1 { font-size: 2.5rem; }
+    .navbar { padding: 1rem 5%; }
+    .grid { padding: 0 5% 50px; }
+}
+
+/* --- Added for Functional Tools & Schedule --- */
+.timer-display {
+    font-family: 'Orbitron';
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 20px 0;
+    text-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+}
+
+.deadline-item {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 12px 15px;
+    border-radius: 12px;
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid var(--border);
+}
+
+input[type="date"] {
+    color-scheme: dark; /* Dark calendar icon */
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 10px;
+}
