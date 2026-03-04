@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, session, jsonify
 from pymongo import MongoClient
 import os
+from flask import Response
 
 # Vercel structure: templates aur static folders root mein hain
 app = Flask(__name__, template_folder='../templates', static_folder='../static')
@@ -125,6 +126,27 @@ def upload():
                 "filename": file.filename
             })
     return redirect("/admin")
+
+
+
+@app.route('/sitemap.xml')
+def sitemap():
+    pages = [
+        "https://student-hub-v2.vercel.app/",
+        "https://student-hub-v2.vercel.app/notes",
+        "https://student-hub-v2.vercel.app/pyq",
+        "https://student-hub-v2.vercel.app/about",
+        "https://student-hub-v2.vercel.app/contact",
+        "https://student-hub-v2.vercel.app/privacy"
+    ]
+    
+    xml = '<?xml version="1.0" encoding="UTF-8"?>'
+    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+    for page in pages:
+        xml += f'<url><loc>{page}</loc><changefreq>daily</changefreq></url>'
+    xml += '</urlset>'
+    
+    return Response(xml, mimetype='application/xml')
 
 @app.route('/about')
 def about():
