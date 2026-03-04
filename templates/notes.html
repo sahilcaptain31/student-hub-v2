@@ -21,9 +21,11 @@
             <div class="card" style="text-align:left;">
                 <h3>{{ item['subject'] }}</h3>
                 <p style="font-size:0.7rem; opacity:0.5; margin-bottom:15px;">Official Study Material</p>
-                <button onclick="viewFile('{{ item['filename'] }}')" class="btn-premium" style="width:100%;">VIEW PREVIEW</button>
+                
+                <button onclick="viewFile('{{ item['url'] }}')" class="btn-premium" style="width:100%;">VIEW PREVIEW</button>
+                
                 {% if session['role'] == 'admin' %}
-                    <a href="/delete/notes/{{ item['id'] }}" style="color:red; font-size:0.6rem; display:block; margin-top:10px;">[DELETE]</a>
+                    <a href="/delete/notes/{{ item['_id'] }}" style="color:red; font-size:0.6rem; display:block; margin-top:10px;">[DELETE]</a>
                 {% endif %}
             </div>
             {% endfor %}
@@ -31,20 +33,23 @@
     </div>
 
     <script>
-        // XP System link with Main Dashboard
         let xp = parseInt(localStorage.getItem('hXP')) || 0;
         let lvl = parseInt(localStorage.getItem('hLVL')) || 1;
         document.getElementById('navLvl').innerText = "LVL " + lvl;
 
-        function viewFile(name) {
+        function viewFile(url) {
             // XP Reward for Studying
             xp += 15; 
             if(xp >= lvl*100) { xp=0; lvl++; alert("LEVEL UP! 🚀"); }
             localStorage.setItem('hXP', xp);
             localStorage.setItem('hLVL', lvl);
             
-            // Open in browser preview instead of download
-            window.open('/view/' + name, '_blank');
+            // BADLAV 3: Direct external link (Google Drive etc.) open hoga
+            if(url && url !== 'None') {
+                window.open(url, '_blank');
+            } else {
+                alert("Error: Link invalid ya missing hai!");
+            }
         }
     </script>
 </body>

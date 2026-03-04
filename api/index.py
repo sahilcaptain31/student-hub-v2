@@ -1,12 +1,12 @@
-from flask import Flask, render_template, request, redirect, session, jsonify
+from flask import Flask, render_template, request, redirect, session, jsonify, Response
 from pymongo import MongoClient
 import os
-from flask import Response
+from bson.objectid import ObjectId
 
-# Vercel structure: templates aur static folders root mein hain
+# Vercel structure
 app = Flask(__name__, template_folder='../templates', static_folder='../static')
 
-# SECURITY: Vercel Settings se secret key uthayega
+# SECURITY
 app.secret_key = os.getenv("SECRET_KEY", "dev_secret_key_123")
 
 # MONGODB CONNECTION
@@ -18,7 +18,6 @@ db = client.student_hub_db
 
 @app.route("/")
 def home():
-    # Leaderboard ke liye top 5 users (level aur xp ke base par)
     leaders = list(db.users.find({}, {"_id": 0, "username": 1, "level": 1}).sort([("level", -1), ("xp", -1)]).limit(5))
     return render_template("index.html", leaders=leaders)
 
@@ -27,21 +26,11 @@ def register():
     if request.method == "POST":
         u, p = request.form["username"], request.form["password"]
         secret_input = request.form.get("admin_secret", "")
-        
-        # Admin check
         MASTER_ADMIN_CODE = os.getenv("ADMIN_CODE") 
         role = 'admin' if MASTER_ADMIN_CODE and secret_input == MASTER_ADMIN_CODE else 'user'
-        
         if db.users.find_one({"username": u}):
             return "Username Already Exists!"
-        
-        db.users.insert_one({
-            "username": u, 
-            "password": p, 
-            "role": role, 
-            "level": 1, 
-            "xp": 0
-        })
+        db.users.insert_one({"username": u, "password": p, "role": role, "level": 1, "xp": 0})
         return redirect("/login")
     return render_template("register.html")
 
@@ -68,16 +57,6 @@ def profile():
     user_data = db.users.find_one({"username": session["user"]})
     return render_template("profile.html", user=user_data)
 
-@app.route("/update_xp", methods=["POST"])
-def update_xp():
-    if "user" in session:
-        data = request.json
-        db.users.update_one(
-            {"username": session["user"]}, 
-            {"$set": {"level": data['level'], "xp": data['xp']}}
-        )
-    return jsonify({"status": "ok"})
-
 # --- CONTENT ROUTES ---
 
 @app.route("/notes")
@@ -90,21 +69,12 @@ def pyq():
     items = list(db.pyq.find())
     return render_template("pyq.html", items=items)
 
-@app.route("/tools")
-def tools():
-    return render_template("tools.html")
-
-@app.route("/schedule")
-def schedule():
-    return render_template("schedule.html")
-
-# --- ADMIN ROUTES ---
+# --- ADMIN & UPLOAD (UPDATED FOR URL) ---
 
 @app.route("/admin")
 def admin():
     if session.get("role") != "admin": 
         return "403: Access Denied!", 403
-    
     all_users = list(db.users.find())
     all_notes = list(db.notes.find())
     all_pyqs = list(db.pyq.find())
@@ -115,19 +85,22 @@ def upload():
     if session.get("role") == "admin":
         subj = request.form["subject"]
         doc_type = request.form["type"] # 'notes' ya 'pyq'
-        file = request.files["file"]
+        file_url = request.form["file_url"] # Direct link from Drive/Cloudinary
         
-        if file:
-            # MongoDB mein record save kar rahe hain
-            # Note: Vercel files delete kar deta hai, isliye baad mein 
-            # hum yahan Direct Link (Gdrive/Cloudinary) ka option daalenge.
+        if file_url:
             db[doc_type].insert_one({
                 "subject": subj, 
-                "filename": file.filename
+                "url": file_url # Filename ki jagah URL save ho raha hai
             })
     return redirect("/admin")
 
+@app.route("/delete/<doc_type>/<id>")
+def delete_item(doc_type, id):
+    if session.get("role") == "admin":
+        db[doc_type].delete_one({"_id": ObjectId(id)})
+    return redirect("/admin")
 
+# --- SEO & PAGES ---
 
 @app.route('/sitemap.xml')
 def sitemap():
@@ -139,26 +112,19 @@ def sitemap():
         "https://student-hub-v2.vercel.app/contact",
         "https://student-hub-v2.vercel.app/privacy"
     ]
-    
-    xml = '<?xml version="1.0" encoding="UTF-8"?>'
-    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+    xml = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
     for page in pages:
         xml += f'<url><loc>{page}</loc><changefreq>daily</changefreq></url>'
     xml += '</urlset>'
-    
     return Response(xml, mimetype='application/xml')
 
 @app.route('/about')
-def about():
-    return render_template('about.html')
+def about(): return render_template('about.html')
 
 @app.route('/privacy')
-def privacy():
-    return render_template('privacy.html')
+def privacy(): return render_template('privacy.html')
 
 @app.route('/contact')
-def contact():
-    return render_template('contact.html')
+def contact(): return render_template('contact.html')
 
-# Required for Vercel
 app = app

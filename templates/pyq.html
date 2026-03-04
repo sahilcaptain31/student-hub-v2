@@ -21,9 +21,11 @@
             <div class="card" style="text-align:left; border-color:var(--secondary);">
                 <h3>{{ item['subject'] }}</h3>
                 <p style="font-size:0.7rem; opacity:0.5; margin-bottom:15px;">Previous Year Paper</p>
-                <button onclick="viewFile('{{ item['filename'] }}')" class="btn-premium" style="width:100%; background:var(--secondary);">OPEN PAPER</button>
+                
+                <button onclick="viewFile('{{ item['url'] }}')" class="btn-premium" style="width:100%; background:var(--secondary);">OPEN PAPER</button>
+                
                 {% if session['role'] == 'admin' %}
-                    <a href="/delete/pyq/{{ item['id'] }}" style="color:red; font-size:0.6rem; display:block; margin-top:10px;">[DELETE]</a>
+                    <a href="/delete/pyq/{{ item['_id'] }}" style="color:red; font-size:0.6rem; display:block; margin-top:10px;">[DELETE]</a>
                 {% endif %}
             </div>
             {% endfor %}
@@ -35,13 +37,18 @@
         let lvl = parseInt(localStorage.getItem('hLVL')) || 1;
         document.getElementById('navLvl').innerText = "LVL " + lvl;
 
-        function viewFile(name) {
-            xp += 10; // PYQ gives 10 XP
+        function viewFile(url) {
+            xp += 10; 
             if(xp >= lvl*100) { xp=0; lvl++; alert("LEVEL UP! 🚀"); }
             localStorage.setItem('hXP', xp);
             localStorage.setItem('hLVL', lvl);
             
-            window.open('/view/' + name, '_blank');
+            // BADLAV: Ab ye direct Google Drive ya external link kholega bina 404 error ke
+            if(url) {
+                window.open(url, '_blank');
+            } else {
+                alert("Link not found! Please check admin panel.");
+            }
         }
     </script>
 </body>
