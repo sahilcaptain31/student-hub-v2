@@ -28,20 +28,23 @@
             background: var(--glass); border: 1px solid rgba(0, 242, 255, 0.1); 
             backdrop-filter: blur(10px); padding: 25px; border-radius: 15px; 
             position: relative; transition: 0.4s; cursor: pointer; color: white;
+            display: flex; flex-direction: column; height: 100%;
         }
         .card:hover { border-color: var(--primary); box-shadow: 0 0 25px rgba(0, 242, 255, 0.2); transform: translateY(-5px); }
         .card h3 { font-family: 'Orbitron'; color: var(--primary); font-size: 1.1rem; margin-bottom: 8px; }
-        .card p { font-size: 0.8rem; opacity: 0.7; }
+        .card p { font-size: 0.8rem; opacity: 0.7; flex-grow: 1; }
         .xp-tag { position: absolute; top: 10px; right: 10px; font-size: 0.6rem; color: var(--secondary); font-family: 'Orbitron'; font-weight: bold; }
 
-        /* Pro Leaderboard Table */
+        /* Game System Style */
+        #gameModule { display:none; margin: 20px auto; max-width: 450px; background: #000; border: 2px solid var(--primary); border-radius: 15px; padding: 15px; text-align: center; }
+        #gameCanvas { background: #000; border: 1px solid #222; width: 100%; height: auto; cursor: crosshair; }
+        .game-controls { display: flex; justify-content: space-between; color: var(--primary); font-family: 'Orbitron'; font-size: 0.7rem; margin-top: 10px; }
+
+        /* Pro Leaderboard Style */
         .leaderboard-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.8rem; font-family: 'Orbitron'; }
         .leaderboard-table th { color: var(--primary); text-align: left; border-bottom: 1px solid var(--primary); padding: 12px; font-size: 0.7rem; }
         .leaderboard-table td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .rank-highlight { color: #ffd700; font-weight: bold; }
-
-        #gameModule { display:none; margin: 20px auto; max-width: 450px; background: #000; border: 2px solid var(--primary); border-radius: 15px; padding: 10px; overflow: hidden; position: relative; }
-        #gameCanvas { background: #000; width: 100%; height: auto; }
+        .rank-highlight { color: #ffd700; font-weight: bold; text-shadow: 0 0 5px #ffd700; }
     </style>
 </head>
 <body class="normal-mode">
@@ -74,22 +77,27 @@
 
         <div id="gameModule">
             <h4 style="font-family: 'Press Start 2P'; font-size: 0.5rem; color: var(--primary); margin-bottom: 10px;">NEURAL_EXTERMINATOR_PRO</h4>
-            <canvas id="gameCanvas" width="400" height="500"></canvas>
-            <button id="startBtn" onclick="startGame()" class="btn-premium" style="width: 100%; margin-top: 10px;">INITIALIZE MISSION</button>
+            <canvas id="gameCanvas" width="400" height="400"></canvas>
+            <div class="game-controls">
+                <span>SCORE: <span id="gScore">0</span></span>
+                <span id="gStatus" style="color: #ff003c;">READY</span>
+            </div>
+            <button onclick="startGame()" style="width: 100%; margin-top: 10px; background: transparent; border: 1px solid var(--primary); color: var(--primary); padding: 8px; cursor: pointer; font-family: 'Orbitron';">INITIALIZE MISSION</button>
         </div>
 
-        <h3 style="font-family: 'Orbitron'; color: white; margin-top: 40px; font-size: 0.9rem; opacity: 0.6;">> CORE_SYSTEM_ACCESS:</h3>
+        <h3 style="font-family: 'Orbitron'; color: white; margin-top: 40px; font-size: 0.9rem; opacity: 0.6;">> SYSTEM_MODULES:</h3>
         <div class="features-grid">
             <div class="card" onclick="location.href='/notes'"><span class="xp-tag">+15 XP</span><h3>📚 Study Vault</h3><p>Access encrypted notes & PDF repository.</p></div>
             <div class="card" onclick="location.href='/pyq'"><span class="xp-tag">+20 XP</span><h3>⚡ PYQ Archive</h3><p>Previous year papers database.</p></div>
             <div class="card" onclick="location.href='/predictor'"><span class="xp-tag">+50 XP</span><h3>📊 Rank Predictor</h3><p>Neural rank estimation algorithm.</p></div>
-            <div class="card" onclick="location.href='/forum'"><span class="xp-tag">+10 XP</span><h3>💬 Global Forum</h3><p>Secure community communication lines.</p></div>
+            <div class="card" onclick="location.href='/forum'"><span class="xp-tag">+10 XP</span><h3>💬 Global Forum</h3><p>Community communication lines.</p></div>
             <div class="card" onclick="location.href='/schedule'"><span class="xp-tag">+15 XP</span><h3>🎯 Mission Tracker</h3><p>Daily goals & schedule management.</p></div>
             <div class="card" onclick="location.href='/tools'"><span class="xp-tag">+5 XP</span><h3>🛠️ System Tools</h3><p>Productivity utilities & calculators.</p></div>
             
-            <div class="card" onclick="location.href='/profile'" style="border-color: var(--secondary);">
-                <h3>👤 User Profile</h3>
-                <p>View your stats, achievements & rank.</p>
+            <div class="card" onclick="location.href='/gpa-calc'" style="border-color: var(--secondary);">
+                <span class="xp-tag">+10 XP</span>
+                <h3 style="color: var(--secondary);">🧮 GPA Master</h3>
+                <p>Calculate your Semester GPA & CGPA instantly.</p>
             </div>
 
             {% if session['user'] == 'admin' %}
@@ -98,23 +106,18 @@
                 <p>Add or modify system resources.</p>
             </div>
             {% else %}
-            <div class="card" onclick="location.href='/analytics'">
-                <h3>📈 Analytics</h3>
-                <p>Detailed performance tracking data.</p>
+            <div class="card" onclick="location.href='/profile'">
+                <h3>👤 My Profile</h3>
+                <p>View stats, badges & personal rank.</p>
             </div>
             {% endif %}
         </div>
 
-        <div class="card" style="margin-top: 30px; border-color: var(--secondary);">
-            <h3 style="color: var(--secondary);">🛰️ GLOBAL_LEADERBOARD_v1.5</h3>
+        <div class="card" style="margin-top: 30px; border-color: #ffd700;">
+            <h3 style="color: #ffd700;">🏆 GLOBAL_LEADERBOARD_v2.0</h3>
             <table class="leaderboard-table">
                 <thead>
-                    <tr>
-                        <th>RANK</th>
-                        <th>OPERATIVE</th>
-                        <th>LEVEL</th>
-                        <th>TOTAL_XP</th>
-                    </tr>
+                    <tr><th>RANK</th><th>OPERATIVE</th><th>LEVEL</th><th>TOTAL_XP</th></tr>
                 </thead>
                 <tbody>
                     {% for leader in leaders %}
@@ -136,7 +139,7 @@
 
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script>
-        // Existing Game Logic (keep your current working game script here)
+        // Toggle Logic
         function toggleGameMode() {
             const gameBox = document.getElementById('gameModule');
             const btn = document.getElementById('gameToggleBtn');
@@ -144,7 +147,80 @@
             gameBox.style.display = isGame ? 'block' : 'none';
             btn.innerText = isGame ? "🎮 SYSTEM: GAMING" : "🕹️ MODE: NORMAL";
         }
+
         particlesJS('particles-js', { particles: { number: { value: 40 }, color: { value: "#00f2ff" }, opacity: { value: 0.2 } } });
+
+        // GAME ENGINE
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        let gameActive = false;
+        let score = 0;
+        let p = { x: 185, y: 370, w: 30, h: 20 };
+        let bullets = [];
+        let enemies = [];
+
+        function startGame() {
+            if(gameActive) return;
+            gameActive = true;
+            score = 0;
+            enemies = [];
+            bullets = [];
+            document.getElementById('gStatus').innerText = "ACTIVE";
+            document.getElementById('gStatus').style.color = "#00ff00";
+            update();
+        }
+
+        function update() {
+            if(!gameActive) return;
+            ctx.clearRect(0,0,400,400);
+            
+            // Player
+            ctx.fillStyle = "#00f2ff";
+            ctx.fillRect(p.x, p.y, p.w, p.h);
+
+            // Bullets
+            bullets.forEach((b, i) => {
+                b.y -= 5;
+                ctx.fillStyle = "#ff003c";
+                ctx.fillRect(b.x, b.y, 4, 10);
+                if(b.y < 0) bullets.splice(i, 1);
+            });
+
+            // Enemies
+            if(Math.random() < 0.03) enemies.push({x: Math.random()*370, y: 0});
+            enemies.forEach((en, i) => {
+                en.y += 2;
+                ctx.fillStyle = "#7000ff";
+                ctx.fillRect(en.x, en.y, 25, 25);
+
+                // Collision with player
+                if(en.y > p.y && en.x > p.x && en.x < p.x + p.w) {
+                    gameActive = false;
+                    document.getElementById('gStatus').innerText = "DESTROYED";
+                    document.getElementById('gStatus').style.color = "#ff003c";
+                }
+
+                // Collision with bullets
+                bullets.forEach((b, bi) => {
+                    if(b.x > en.x && b.x < en.x+25 && b.y < en.y+25) {
+                        enemies.splice(i, 1);
+                        bullets.splice(bi, 1);
+                        score += 10;
+                        document.getElementById('gScore').innerText = score;
+                    }
+                });
+            });
+
+            requestAnimationFrame(update);
+        }
+
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            p.x = e.clientX - rect.left - 15;
+        });
+        canvas.addEventListener('click', () => {
+            if(gameActive) bullets.push({x: p.x + 13, y: p.y});
+        });
     </script>
 
     <script src="https://pl28843487.effectivegatecpm.com/8b/e5/ec/8be5ec537213869fea89bb6105a88ae1.js"></script>
