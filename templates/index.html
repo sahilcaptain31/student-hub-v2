@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../static/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <meta name="google-site-verification" content="Yi92QYiIeawAKBM_sHu0Rb1DAPY2nrwjUN4VkZguwUg" />
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2805364209433064" crossorigin="anonymous"></script>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2805364209433064"
      crossorigin="anonymous"></script>
     <style>
@@ -21,80 +23,43 @@
         }
 
         .xp-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            font-family: 'Orbitron', sans-serif;
-            letter-spacing: 2px;
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 12px; font-family: 'Orbitron', sans-serif; letter-spacing: 2px;
         }
 
-        .rank-label {
-            color: var(--secondary);
-            font-size: 0.7rem;
-            text-shadow: 0 0 5px var(--secondary);
+        .rank-label { color: var(--secondary); font-size: 0.7rem; text-shadow: 0 0 5px var(--secondary); }
+        .lvl-badge-main { background: var(--primary); color: #000; padding: 2px 10px; border-radius: 5px; font-weight: bold; font-size: 0.9rem; box-shadow: 0 0 10px var(--primary); }
+
+        .xp-track-outer { width: 100%; height: 18px; background: rgba(255, 255, 255, 0.05); border-radius: 50px; border: 1px solid rgba(255, 255, 255, 0.1); padding: 3px; box-sizing: border-box; }
+        #xpFill { width: 0%; height: 100%; background: linear-gradient(90deg, #3b82f6, #22d3ee, #a855f7); background-size: 200% 200%; border-radius: 50px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); position: relative; animation: gradientMove 3s ease infinite; box-shadow: 0 0 15px var(--primary); }
+        
+        #xpFill::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); animation: scan 2s infinite; }
+        @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        @keyframes scan { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+        .xp-stats-footer { display: flex; justify-content: flex-end; margin-top: 8px; font-family: 'Orbitron'; font-size: 0.65rem; color: rgba(255,255,255,0.5); }
+
+        /* --- MOBILE SPECIFIC FIXES --- */
+        .main-wrapper {
+            display: grid;
+            grid-template-columns: 2.5fr 1fr;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 20px;
+            padding: 20px;
         }
 
-        .lvl-badge-main {
-            background: var(--primary);
-            color: #000;
-            padding: 2px 10px;
-            border-radius: 5px;
-            font-weight: bold;
-            font-size: 0.9rem;
-            box-shadow: 0 0 10px var(--primary);
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
         }
 
-        /* The Animated Bar */
-        .xp-track-outer {
-            width: 100%;
-            height: 18px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 50px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 3px;
-            box-sizing: border-box;
-        }
-
-        #xpFill {
-            width: 0%;
-            height: 100%;
-            background: linear-gradient(90deg, #3b82f6, #22d3ee, #a855f7);
-            background-size: 200% 200%;
-            border-radius: 50px;
-            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            animation: gradientMove 3s ease infinite;
-            box-shadow: 0 0 15px var(--primary);
-        }
-
-        /* Scanning effect on the bar */
-        #xpFill::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            animation: scan 2s infinite;
-        }
-
-        @keyframes gradientMove {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        @keyframes scan {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
-        .xp-stats-footer {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 8px;
-            font-family: 'Orbitron';
-            font-size: 0.65rem;
-            color: rgba(255,255,255,0.5);
+        @media (max-width: 800px) {
+            .main-wrapper { grid-template-columns: 1fr; } /* Leaderboard goes down */
+            .features-grid { grid-template-columns: 1fr; } /* Icons get big and stack */
+            .hero h1 { font-size: 1.5rem; text-align: center; }
+            .xp-container { width: 90%; }
+            .card h3 { font-size: 1.4rem; } /* Mobile icons/text size fixed */
         }
     </style>
 </head>
@@ -115,26 +80,25 @@
     </nav>
 
     <div class="hero">
-        <h1 style="font-family: 'Orbitron';">System Access: <span>{{ session['user'] if session['user'] else 'Explorer' }}</span></h1>
+        <h1 style="font-family: 'Orbitron'; text-align: center; margin-top: 20px;">System Access: <span style="color: var(--primary);">{{ session['user'] if session['user'] else 'Explorer' }}</span></h1>
         
         <div class="xp-container">
             <div class="xp-header">
                 <span class="rank-label" id="rankName">RANK: NOVICE</span>
                 <span class="lvl-badge-main">LVL <span id="lvl">1</span></span>
             </div>
-            
             <div class="xp-track-outer">
                 <div id="xpFill"></div>
             </div>
-            
             <div class="xp-stats-footer">
                 <span id="xpText">0 / 100 XP</span>
             </div>
         </div>
     </div>
 
-    <div class="grid" style="grid-template-columns: 2fr 1fr; max-width: 1200px; margin: 0 auto; gap: 20px; padding: 20px;">
-        <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+    <div class="main-wrapper">
+        
+        <div class="features-grid">
             <div class="card" onclick="location.href='/notes'"><h3>📚 Notes</h3><p>+15 XP</p></div>
             <div class="card" onclick="location.href='/pyq'"><h3>⚡ PYQs</h3><p>+15 XP</p></div>
             <div class="card" onclick="location.href='/tools'"><h3>📊 CGPA Cal</h3><p>+25 XP</p></div>
@@ -145,12 +109,12 @@
             <div class="card" onclick="alert('AI Buddy Online!')"><h3>🤖 Ask AI</h3><p>Help</p></div>
         </div>
 
-        <div class="card" style="background:var(--glass); border: 1px solid rgba(59, 130, 246, 0.2);">
-            <h3 style="color:var(--primary); font-family: 'Orbitron';">🏆 LEADERBOARD</h3>
+        <div class="card" style="background:var(--glass); border: 1px solid rgba(59, 130, 246, 0.2); height: fit-content;">
+            <h3 style="color:var(--primary); font-family: 'Orbitron'; margin-bottom: 15px;">🏆 LEADERBOARD</h3>
             {% for leader in leaders %}
                 <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05);">
-                    <span>{{ loop.index }}. {{ leader['username'] }}</span>
-                    <span style="color:var(--secondary); font-weight: bold;">LVL {{ leader['level'] }}</span>
+                    <span style="font-size: 0.9rem;">{{ loop.index }}. {{ leader['username'] }}</span>
+                    <span style="color:var(--secondary); font-weight: bold; font-size: 0.8rem;">LVL {{ leader['level'] }}</span>
                 </div>
             {% endfor %}
         </div>
@@ -158,20 +122,18 @@
 
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script>
+        // Logic same hai as before
         let xp = parseInt(localStorage.getItem('hXP')) || 0;
         let lvl = parseInt(localStorage.getItem('hLVL')) || 1;
 
         function updateUI() {
             let next = lvl * 100;
             let percent = (xp / next) * 100;
-            
             document.getElementById('xpFill').style.width = percent + "%";
             document.getElementById('lvl').innerText = lvl;
             document.getElementById('xpText').innerText = `${xp} / ${next} XP`;
-            
             if(document.getElementById('navLvl')) document.getElementById('navLvl').innerText = "LVL " + lvl;
             
-            // Rank logic
             let rank = "NOVICE";
             if(lvl >= 5) rank = "ELITE";
             if(lvl >= 10) rank = "MASTER";
@@ -182,13 +144,11 @@
             localStorage.setItem('hLVL', lvl);
         }
 
-        // Logic for auto-XP (passive)
         setInterval(() => {
             if("{{ session['user'] }}") {
                 xp += 2; 
                 if(xp >= lvl * 100) { 
-                    xp = 0; 
-                    lvl++; 
+                    xp = 0; lvl++; 
                     fetch('/update_xp', {
                         method: 'POST', 
                         headers: {'Content-Type': 'application/json'}, 
@@ -202,11 +162,13 @@
         updateUI();
         particlesJS('particles-js', { particles: { number: { value: 40 }, opacity: { value: 0.2 }, line_linked: { opacity: 0.1 } } });
     </script>
-    <footer class="text-center py-4">
-        <a href="/about" class="mx-2 text-white text-decoration-none">About Us</a> |
-        <a href="/privacy" class="mx-2 text-white text-decoration-none">Privacy Policy</a> |
-        <a href="/contact" class="mx-2 text-white text-decoration-none">Contact Us</a>
+
+    <footer style="text-align: center; padding: 20px; opacity: 0.6; font-size: 0.8rem;">
+        <a href="/about" style="color:white; text-decoration:none;">About Us</a> |
+        <a href="/privacy" style="color:white; text-decoration:none;">Privacy Policy</a> |
+        <a href="/contact" style="color:white; text-decoration:none;">Contact Us</a>
     </footer>
+
     <script src="https://pl28843487.effectivegatecpm.com/8b/e5/ec/8be5ec537213869fea89bb6105a88ae1.js"></script>
     <script async="async" data-cfasync="false" src="https://pl28843537.effectivegatecpm.com/7a6e40ba8fe390650b386a0fcd9ea143/invoke.js"></script>
     <div id="container-7a6e40ba8fe390650b386a0fcd9ea143"></div>
