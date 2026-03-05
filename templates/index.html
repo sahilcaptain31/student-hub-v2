@@ -6,8 +6,9 @@
     <link rel="stylesheet" id="gameStyle" href="../static/css/game-mode.css" disabled>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #00f2ff; --secondary: #7000ff; --glass: rgba(255, 255, 255, 0.03); }
+        :root { --primary: #00f2ff; --secondary: #7000ff; --glass: rgba(255, 255, 255, 0.05); }
 
+        /* Floating Game Switch */
         .game-switch-container { position: fixed; right: 20px; bottom: 20px; z-index: 10000; }
         #gameToggleBtn {
             background: black; border: 2px solid var(--primary); color: var(--primary);
@@ -15,217 +16,179 @@
             box-shadow: 0 0 10px var(--primary); transition: 0.3s;
             clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
         }
-        #gameToggleBtn.active { background: var(--primary); color: black; box-shadow: 0 0 20px var(--primary); }
 
-        /* CRT Effect */
-        body::before {
-            content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-            z-index: 999; pointer-events: none; background-size: 100% 3px, 3px 100%;
-        }
-
-        #bootScreen {
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            color: #00f2ff; font-family: 'Orbitron'; z-index: 20000;
-            background: black; padding: 30px; border: 1px solid #00f2ff;
-            display: none; text-align: left; line-height: 1.6;
-        }
-
-        /* --- PRO GAME MODULE --- */
-        #gameModule {
-            display:none; text-align:center; margin: 20px auto; max-width: 450px; 
-            background: #000; padding: 10px; border: 2px solid var(--primary); 
-            box-shadow: 0 0 30px rgba(0, 242, 255, 0.4); position: relative;
-            border-radius: 15px; overflow: hidden;
-        }
-        #gameCanvas { 
-            background: radial-gradient(circle, #001 0%, #000 100%); 
-            border: 1px solid #111; touch-action: none; width: 100%; height: auto;
-        }
-
-        .xp-container {
-            max-width: 450px; margin: 25px auto; background: rgba(0, 0, 0, 0.7);
-            padding: 20px; border-radius: 10px; border: 1px solid var(--primary);
-            box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
-            clip-path: polygon(5% 0, 100% 0, 95% 100%, 0% 100%);
-        }
-        .xp-track-outer { width: 100%; height: 12px; background: rgba(255,255,255,0.1); border-radius: 20px; overflow: hidden; }
-        #xpFill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--secondary)); box-shadow: 0 0 10px var(--primary); transition: width 0.5s; }
-
-        .features-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
-        .card { background: var(--glass) !important; border: 1px solid rgba(0, 242, 255, 0.1) !important; backdrop-filter: blur(5px); position: relative; transition: 0.3s; padding: 15px; border-radius: 8px; color: white;}
-        .card:hover { border-color: var(--primary) !important; box-shadow: 0 0 20px rgba(0, 242, 255, 0.2); transform: scale(1.02); }
+        /* --- FEATURE GRID DESIGN --- */
+        .main-wrapper { max-width: 1000px; margin: 0 auto; padding: 20px; }
         
-        @media (max-width: 800px) { .features-grid { grid-template-columns: 1fr; } }
+        .features-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            gap: 20px; 
+            margin-top: 30px;
+        }
+
+        .card { 
+            background: var(--glass); 
+            border: 1px solid rgba(0, 242, 255, 0.1); 
+            backdrop-filter: blur(10px); 
+            padding: 25px; 
+            border-radius: 15px; 
+            position: relative; 
+            transition: 0.4s; 
+            cursor: pointer;
+            overflow: hidden;
+            color: white;
+        }
+
+        .card::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+            transition: 0.5s;
+        }
+
+        .card:hover::before { left: 100%; }
+
+        .card:hover { 
+            border-color: var(--primary); 
+            box-shadow: 0 0 25px rgba(0, 242, 255, 0.2); 
+            transform: translateY(-5px); 
+        }
+
+        .card h3 { font-family: 'Orbitron'; color: var(--primary); margin-bottom: 10px; font-size: 1.2rem; }
+        .card p { font-size: 0.85rem; opacity: 0.7; line-height: 1.5; }
+        .xp-tag { 
+            position: absolute; top: 10px; right: 10px; font-size: 0.6rem; 
+            color: var(--secondary); font-family: 'Orbitron'; font-weight: bold;
+            border: 1px solid var(--secondary); padding: 2px 5px; border-radius: 4px;
+        }
+
+        /* Boot Screen */
+        #bootScreen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: black; color: var(--primary); font-family: 'Orbitron';
+            z-index: 20000; display: none; padding: 50px; box-sizing: border-box;
+        }
+
+        #gameModule { display:none; margin: 20px auto; }
     </style>
 </head>
 <body class="normal-mode">
     <div id="particles-js" style="position:fixed; width:100%; height:100%; z-index:-1; background:#05080a;"></div>
-    
     <div id="bootScreen"></div>
 
     <div class="game-switch-container">
         <button id="gameToggleBtn" onclick="toggleGameMode()">🕹️ MODE: NORMAL</button>
     </div>
 
-    <nav class="navbar">
-        <a href="/" class="logo" style="letter-spacing: 4px;">HUB_OS v1.5</a>
+    <nav class="navbar" style="display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; background: rgba(0,0,0,0.8); border-bottom: 1px solid var(--glass);">
+        <a href="/" class="logo" style="letter-spacing: 4px; font-family: 'Orbitron'; color: var(--primary); text-decoration: none; font-weight: bold;">HUB_OS v1.5</a>
+        <div class="nav-links">
+            {% if session['user'] %}
+                <a href="/profile" style="color: white; margin-right: 15px; text-decoration: none; font-size: 0.8rem;">[ PROFILE ]</a>
+                <a href="/logout" style="color: #ff003c; text-decoration: none; font-size: 0.8rem;">Terminal.Exit()</a>
+            {% else %}
+                <a href="/login" style="color: white; text-decoration: none; margin-right: 15px;">Login</a>
+                <a href="/register" class="btn-premium" style="padding: 8px 15px; background: var(--primary); color: black; text-decoration: none; font-weight: bold; border-radius: 5px;">Initialize</a>
+            {% endif %}
+        </div>
     </nav>
 
     <div class="hero">
-        <div id="gameModule">
-            <h4 style="font-family: 'Press Start 2P'; font-size: 0.6rem; color: var(--primary); margin-bottom: 10px;">BACKLOG_EXTERMINATOR PRO</h4>
-            <canvas id="gameCanvas" width="400" height="500"></canvas>
-            <div style="display: flex; justify-content: space-between; margin-top: 10px; font-family: 'Orbitron'; color: var(--primary); font-size: 0.7rem;">
-                <span>KILLS: <span id="gameScore">0</span></span>
-                <span>LEVEL: <span id="gameLvlDisp">1</span></span>
-            </div>
-            <button id="startBtn" onclick="startGame()" class="btn-premium" style="width: 100%; margin-top: 10px; font-size: 0.7rem;">START MISSION</button>
-        </div>
-
+        <h2 style="font-family: 'Orbitron'; text-align: center; color: white; font-size: 1rem; margin-top: 30px;">
+            USER_STATUS: <span style="color: var(--primary);">{{ session['user'] if session['user'] else 'GUEST_PROFILER' }}</span>
+        </h2>
+        
         <div class="xp-container">
             <div class="xp-header" style="display: flex; justify-content: space-between; margin-bottom: 8px;">
                 <span id="rankName" style="color: var(--secondary); font-family: 'Orbitron'; font-size: 0.7rem;">RANK: NOVICE</span>
                 <span style="color: var(--primary); font-family: 'Orbitron'; font-size: 0.8rem;">LVL <span id="lvl">1</span></span>
             </div>
             <div class="xp-track-outer"><div id="xpFill"></div></div>
-            <div id="xpText" style="text-align: right; font-size: 0.6rem; color: #555; margin-top: 5px; font-family: 'Orbitron';">0/100 XP</div>
+            <div id="xpText" style="text-align: right; font-size: 0.6rem; color: #777; margin-top: 5px; font-family: 'Orbitron';">0/100 XP</div>
+        </div>
+
+        <div id="gameModule">
+            <canvas id="gameCanvas" width="400" height="500"></canvas>
+            <button id="startBtn" onclick="startGame()" class="btn-premium" style="width: 100%; margin-top: 10px;">START MISSION</button>
+        </div>
+    </div>
+
+    <div class="main-wrapper">
+        <h4 style="font-family: 'Orbitron'; color: white; margin-bottom: 20px; opacity: 0.5; font-size: 0.8rem;">> ACCESS_MODULES:</h4>
+        
+        <div class="features-grid">
+            <div class="card" onclick="location.href='/notes'">
+                <span class="xp-tag">+15 XP</span>
+                <h3>📚 Study Vault</h3>
+                <p>Access structured notes, PDF resources, and hand-written materials for your exams.</p>
+            </div>
+
+            <div class="card" onclick="location.href='/pyq'">
+                <span class="xp-tag">+20 XP</span>
+                <h3>⚡ Past Papers</h3>
+                <p>Previous Year Questions (PYQs) categorized by subject and year. Analyze the pattern.</p>
+            </div>
+
+            <div class="card" onclick="location.href='/predictor'">
+                <span class="xp-tag">+30 XP</span>
+                <h3>📊 Rank Predictor</h3>
+                <p>Our neural algorithm predicts your potential rank based on current mock scores.</p>
+            </div>
+
+            <div class="card" onclick="location.href='/forum'">
+                <span class="xp-tag">+10 XP</span>
+                <h3>💬 Global Forum</h3>
+                <p>Connect with other students, clear doubts, and share resources in the community.</p>
+            </div>
+
+            <div class="card" onclick="location.href='/schedule'">
+                <span class="xp-tag">+15 XP</span>
+                <h3>🎯 Mission Control</h3>
+                <p>Track your daily study goals and manage your schedule with a gamified task list.</p>
+            </div>
+
+            <div class="card" onclick="location.href='/tools'">
+                <h3>🛠️ System Tools</h3>
+                <p>Calculators, timers, and specialized utilities to boost your productivity levels.</p>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top: 30px; border-color: var(--secondary);">
+            <h3 style="color: var(--secondary);">🏆 TOP_OPERATIVES</h3>
+            <div id="leaderboardBox" style="margin-top: 15px;">
+                {% for leader in leaders %}
+                <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem;">
+                    <span>{{ loop.index }}. {{ leader['username'] }}</span>
+                    <span style="color: var(--primary);">LVL {{ leader['level'] }}</span>
+                </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script>
-        // --- GAME ENGINE PRO ---
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        let isPlaying = false, score = 0, gameLevel = 1;
-        let player = { x: 180, y: 420, w: 40, h: 40, speed: 10 };
-        let bullets = [], enemies = [], stars = [], keys = {};
+        /* Particles & Basic UI Logic yahan aayegi (Jo pehle thi) */
+        particlesJS('particles-js', { particles: { number: { value: 40 }, color: { value: "#00f2ff" }, opacity: { value: 0.2 } } });
 
-        // Starfield background data
-        for(let i=0; i<60; i++) stars.push({x: Math.random()*400, y: Math.random()*500, s: Math.random()*2});
-
-        // Desktop Controls
-        window.addEventListener('keydown', e => keys[e.code] = true);
-        window.addEventListener('keyup', e => keys[e.code] = false);
-
-        // Mobile Controls (Drag to move)
-        canvas.addEventListener('touchmove', e => {
-            if(!isPlaying) return;
-            e.preventDefault();
-            let rect = canvas.getBoundingClientRect();
-            let touchX = e.touches[0].clientX - rect.left;
-            player.x = (touchX * (canvas.width / rect.width)) - player.w/2;
-        }, {passive: false});
-
-        function startGame() {
-            if(isPlaying) return;
-            isPlaying = true; score = 0; enemies = []; bullets = [];
-            document.getElementById('startBtn').style.display = 'none';
-            gameLoop();
-        }
-
-        function gameLoop() {
-            if(!isPlaying) return;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // 1. Draw Moving Starfield
-            ctx.fillStyle = "white";
-            stars.forEach(s => {
-                s.y += 2; if(s.y > 500) s.y = 0;
-                ctx.fillRect(s.x, s.y, s.s, s.s);
-            });
-
-            // 2. Move Player (Keyboard)
-            if(keys['KeyA'] || keys['ArrowLeft']) player.x -= player.speed;
-            if(keys['KeyD'] || keys['ArrowRight']) player.x += player.speed;
-            player.x = Math.max(0, Math.min(canvas.width - player.w, player.x));
-
-            // 3. Auto-Shoot
-            if(Math.random() < 0.1) bullets.push({ x: player.x + player.w/2 - 2, y: player.y, w: 4, h: 12 });
-
-            // 4. Draw Player (Neon Ship)
-            ctx.shadowBlur = 15; ctx.shadowColor = "#00f2ff";
-            ctx.fillStyle = "#00f2ff";
-            ctx.beginPath();
-            ctx.moveTo(player.x + player.w/2, player.y);
-            ctx.lineTo(player.x, player.y + player.h);
-            ctx.lineTo(player.x + player.w, player.y + player.h);
-            ctx.fill();
-            ctx.shadowBlur = 0;
-
-            // 5. Bullets
-            bullets.forEach((b, i) => {
-                b.y -= 12; ctx.fillStyle = "#ff00ff"; ctx.fillRect(b.x, b.y, b.w, b.h);
-                if(b.y < 0) bullets.splice(i, 1);
-            });
-
-            // 6. Enemies (Backlogs)
-            if(Math.random() < 0.04) enemies.push({ x: Math.random()*370, y: -30, w: 30, h: 30, speed: 3 + (score/100) });
-
-            enemies.forEach((en, ei) => {
-                en.y += en.speed;
-                ctx.shadowBlur = 10; ctx.shadowColor = "#ff003c";
-                ctx.fillStyle = "#ff003c";
-                ctx.fillRect(en.x, en.y, en.w, en.h);
-                ctx.shadowBlur = 0;
-
-                // Hit Detection
-                bullets.forEach((b, bi) => {
-                    if(b.x < en.x+en.w && b.x+b.w > en.x && b.y < en.y+en.h && b.y+b.h > en.y) {
-                        enemies.splice(ei, 1); bullets.splice(bi, 1);
-                        score += 10; document.getElementById('gameScore').innerText = score;
-                    }
-                });
-
-                // Game Over
-                if(player.x < en.x+en.w && player.x+player.w > en.x && player.y < en.y+en.h && player.y+player.h > en.y) {
-                    isPlaying = false; alert("WASTED! MISSION SCORE: " + score);
-                    location.reload();
-                }
-            });
-
-            requestAnimationFrame(gameLoop);
-        }
-
-        // --- HUB OS LOGIC ---
         function toggleGameMode() {
-            const gameCss = document.getElementById('gameStyle');
             const gameBox = document.getElementById('gameModule');
             const btn = document.getElementById('gameToggleBtn');
-            const isGame = gameCss.disabled;
+            const gameCss = document.getElementById('gameStyle');
 
-            if (isGame) {
-                gameCss.disabled = false; gameBox.style.display = 'block';
-                document.body.classList.add('game-mode-active');
-                btn.innerText = "🎮 SYSTEM: ONLINE"; btn.classList.add('active');
+            if (gameCss.disabled) {
+                gameCss.disabled = false;
+                gameBox.style.display = 'block';
+                btn.innerText = "🎮 SYSTEM: ONLINE";
                 localStorage.setItem('hubMode', 'game');
-                showBootSequence();
             } else {
-                gameCss.disabled = true; gameBox.style.display = 'none';
-                document.body.classList.remove('game-mode-active');
-                btn.innerText = "🕹️ MODE: NORMAL"; btn.classList.remove('active');
+                gameCss.disabled = true;
+                gameBox.style.display = 'none';
+                btn.innerText = "🕹️ MODE: NORMAL";
                 localStorage.setItem('hubMode', 'normal');
-                isPlaying = false;
             }
         }
-
-        function showBootSequence() {
-            const boot = document.getElementById('bootScreen');
-            boot.style.display = 'block';
-            let lines = ["BOOTING NEURAL_LINK...", "SYNCING SHIP CONTROLS...", "READY."], i = 0;
-            boot.innerHTML = "";
-            let interval = setInterval(() => {
-                boot.innerHTML += lines[i] + "<br>"; i++;
-                if(i >= lines.length) { clearInterval(interval); setTimeout(() => boot.style.display = 'none', 1000); }
-            }, 400);
-        }
-
-        window.onload = () => { if(localStorage.getItem('hubMode') === 'game') toggleGameMode(); };
-        particlesJS('particles-js', { particles: { number: { value: 40 }, color: { value: "#00f2ff" }, opacity: { value: 0.2 } } });
     </script>
-
     <script src="https://pl28843487.effectivegatecpm.com/8b/e5/ec/8be5ec537213869fea89bb6105a88ae1.js"></script>
     <script async="async" data-cfasync="false" src="https://pl28843537.effectivegatecpm.com/7a6e40ba8fe390650b386a0fcd9ea143/invoke.js"></script>
     <div id="container-7a6e40ba8fe390650b386a0fcd9ea143"></div>
