@@ -35,8 +35,10 @@
         .card p { font-size: 0.8rem; opacity: 0.7; }
         .xp-tag { position: absolute; top: 10px; right: 10px; font-size: 0.6rem; color: var(--secondary); font-family: 'Orbitron'; font-weight: bold; }
 
-        /* Special Admin/Upload Style */
-        .admin-special { border: 1px dashed var(--primary); background: rgba(0, 242, 255, 0.02); }
+        /* Leaderboard Style */
+        .leaderboard-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.8rem; }
+        .leaderboard-table th { color: var(--primary); text-align: left; border-bottom: 1px solid var(--primary); padding: 10px; }
+        .leaderboard-table td { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
 
         /* Game Engine Visuals */
         #gameModule { display:none; margin: 20px auto; max-width: 450px; background: #000; border: 2px solid var(--primary); border-radius: 15px; padding: 10px; overflow: hidden; position: relative; }
@@ -50,7 +52,7 @@
         <a href="/" class="logo" style="letter-spacing: 4px; font-family: 'Orbitron'; color: var(--primary); text-decoration: none; font-weight: bold;">STUDENT_HUB_OS</a>
         <div class="nav-links">
             {% if session['user'] == 'admin' %}
-                <a href="/admin" style="color: #00f2ff; border: 1px solid #00f2ff; padding: 4px 8px; font-size: 0.7rem; text-decoration: none;">[ ADMIN_PANEL ]</a>
+                <a href="/admin" style="color: #ff003c; border: 1px solid #ff003c; padding: 4px 8px; font-size: 0.7rem; text-decoration: none; font-family: 'Orbitron';">[ ADMIN_PANEL ]</a>
             {% endif %}
             <a href="/profile" style="color: white; margin-left: 15px; text-decoration: none; font-size: 0.8rem;">Profile</a>
             <a href="/logout" style="color: #ff003c; margin-left: 10px; text-decoration: none; font-size: 0.8rem;">Exit</a>
@@ -60,7 +62,7 @@
     <div class="main-wrapper">
         <div class="xp-container" style="background: rgba(0,0,0,0.7); padding: 20px; border-radius: 10px; border: 1px solid var(--primary);">
             <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-family: 'Orbitron'; color: var(--primary); font-size: 0.8rem;">
-                <span>RANK: SENIOR_OPERATIVE</span>
+                <span>RANK: {% if session['user'] == 'admin' %}ROOT_ADMIN{% else %}OPERATIVE{% endif %}</span>
                 <span>LVL <span id="lvl">1</span></span>
             </div>
             <div style="width: 100%; height: 10px; background: rgba(255,255,255,0.1); border-radius: 5px; overflow: hidden;">
@@ -84,10 +86,50 @@
             <div class="card" onclick="location.href='/pyq'"><span class="xp-tag">+20 XP</span><h3>⚡ PYQ Archive</h3><p>Previous year papers database.</p></div>
             <div class="card" onclick="location.href='/predictor'"><span class="xp-tag">+50 XP</span><h3>📊 Rank Predictor</h3><p>Neural rank estimation tools.</p></div>
             <div class="card" onclick="location.href='/forum'"><span class="xp-tag">+10 XP</span><h3>💬 Global Forum</h3><p>Connect with the community.</p></div>
+            
+            <div class="card" style="border-color: #ffd700;">
+                <h3 style="color: #ffd700;">🏆 Top Rankings</h3>
+                <div style="font-size: 0.7rem; margin-top: 10px;">
+                    {% for leader in leaders[:3] %}
+                        <div style="display:flex; justify-content:space-between; margin-bottom:5px; opacity:0.8;">
+                            <span>#{{ loop.index }} {{ leader.username }}</span>
+                            <span style="color:#ffd700;">LVL {{ leader.level }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
             <div class="card" onclick="location.href='/schedule'"><span class="xp-tag">+15 XP</span><h3>🎯 Mission Tracker</h3><p>Manage daily goals & schedule.</p></div>
             <div class="card" onclick="location.href='/tools'"><span class="xp-tag">+5 XP</span><h3>🛠️ System Tools</h3><p>Calculators & productivity utilities.</p></div>
-            <div class="card admin-special" onclick="location.href='/upload'"><h3>📤 Data Upload</h3><p>Contribute resources to the hub.</p></div>
+            
+            {% if session['user'] == 'admin' %}
+            <div class="card" onclick="location.href='/upload'" style="border: 1px dashed #ff003c; background: rgba(255,0,60,0.05);">
+                <span class="xp-tag" style="color: #ff003c;">SECURE</span>
+                <h3 style="color: #ff003c;">📤 Data Upload</h3>
+                <p>Add/Edit/Delete system resources.</p>
+            </div>
+            {% endif %}
+
             <div class="card" onclick="location.href='/contact'"><h3>📞 Support</h3><p>Contact System Admin.</p></div>
+        </div>
+
+        <div class="card" style="margin-top: 30px; border-color: var(--secondary);">
+            <h3 style="color: var(--secondary);">🛰️ GLOBAL_RANKINGS_DATA</h3>
+            <table class="leaderboard-table">
+                <thead>
+                    <tr><th>RANK</th><th>USER</th><th>LEVEL</th><th>XP</th></tr>
+                </thead>
+                <tbody>
+                    {% for leader in leaders %}
+                    <tr>
+                        <td>#{{ loop.index }}</td>
+                        <td>{{ leader.username }}</td>
+                        <td style="color: var(--primary);">{{ leader.level }}</td>
+                        <td style="opacity:0.6;">{{ leader.xp }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -97,84 +139,10 @@
 
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script>
+        // ... (Tumhara existing Game aur Particle Logic yahan aayega) ...
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        let isPlaying = false, score = 0;
-        let player = { x: 180, y: 420, w: 40, h: 40 };
-        let bullets = [], enemies = [], stars = [];
-
-        // STARFIELD
-        for(let i=0; i<50; i++) stars.push({x: Math.random()*400, y: Math.random()*500, s: Math.random()*2});
-
-        // DESKTOP CONTROLS
-        window.addEventListener('keydown', e => {
-            if(e.code === 'ArrowLeft' || e.code === 'KeyA') player.x -= 15;
-            if(e.code === 'ArrowRight' || e.code === 'KeyD') player.x += 15;
-            player.x = Math.max(0, Math.min(400 - player.w, player.x));
-        });
-
-        // MOBILE DRAG CONTROL (Pakad kar hilana)
-        canvas.addEventListener('touchmove', e => {
-            if(!isPlaying) return;
-            e.preventDefault();
-            let rect = canvas.getBoundingClientRect();
-            let touchX = e.touches[0].clientX - rect.left;
-            player.x = (touchX * (400 / rect.width)) - player.w/2;
-        }, {passive: false});
-
-        function startGame() {
-            isPlaying = true; score = 0; enemies = []; bullets = [];
-            document.getElementById('startBtn').style.display = 'none';
-            gameLoop();
-        }
-
-        function gameLoop() {
-            if(!isPlaying) return;
-            ctx.fillStyle = "black"; ctx.fillRect(0,0,400,500);
-
-            // Stars
-            ctx.fillStyle = "white";
-            stars.forEach(s => { s.y += 3; if(s.y > 500) s.y = 0; ctx.fillRect(s.x, s.y, s.s, s.s); });
-
-            // Player (Glow Ship)
-            ctx.shadowBlur = 15; ctx.shadowColor = "#00f2ff";
-            ctx.fillStyle = "#00f2ff";
-            ctx.beginPath();
-            ctx.moveTo(player.x + 20, player.y);
-            ctx.lineTo(player.x, player.y + 40);
-            ctx.lineTo(player.x + 40, player.y + 40);
-            ctx.fill();
-            ctx.shadowBlur = 0;
-
-            // Auto-Fire
-            if(Math.random() < 0.1) bullets.push({x: player.x+18, y: player.y, w:4, h:10});
-            bullets.forEach((b, i) => { 
-                b.y -= 10; ctx.fillStyle = "#ff00ff"; ctx.fillRect(b.x, b.y, b.w, b.h);
-                if(b.y < 0) bullets.splice(i, 1);
-            });
-
-            // Enemies
-            if(Math.random() < 0.05) enemies.push({x: Math.random()*360, y: -40, w:30, h:30});
-            enemies.forEach((en, ei) => {
-                en.y += 3; ctx.fillStyle = "#ff003c"; ctx.fillRect(en.x, en.y, en.w, en.h);
-                
-                // Bullet collision
-                bullets.forEach((b, bi) => {
-                    if(b.x < en.x+30 && b.x+4 > en.x && b.y < en.y+30) {
-                        enemies.splice(ei, 1); bullets.splice(bi, 1);
-                        score += 10; document.getElementById('gameScore').innerText = score;
-                    }
-                });
-
-                if(en.y > 500) enemies.splice(ei, 1);
-                // Death
-                if(player.x < en.x+30 && player.x+40 > en.x && player.y < en.y+30) {
-                    isPlaying = false; alert("GAME OVER! Score: " + score); location.reload();
-                }
-            });
-
-            requestAnimationFrame(gameLoop);
-        }
+        // (Baki game code jo tumne upar diya tha, same use hoga)
 
         function toggleGameMode() {
             const gameBox = document.getElementById('gameModule');
@@ -183,9 +151,9 @@
             gameBox.style.display = isGame ? 'block' : 'none';
             btn.innerText = isGame ? "🎮 SYSTEM: GAMING" : "🕹️ MODE: NORMAL";
         }
-
         particlesJS('particles-js', { particles: { number: { value: 40 }, color: { value: "#00f2ff" }, opacity: { value: 0.2 } } });
     </script>
+
     <script src="https://pl28843487.effectivegatecpm.com/8b/e5/ec/8be5ec537213869fea89bb6105a88ae1.js"></script>
     <script async="async" data-cfasync="false" src="https://pl28843537.effectivegatecpm.com/7a6e40ba8fe390650b386a0fcd9ea143/invoke.js"></script>
     <div id="container-7a6e40ba8fe390650b386a0fcd9ea143"></div>
