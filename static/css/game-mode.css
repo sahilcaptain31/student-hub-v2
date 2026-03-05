@@ -1,0 +1,40 @@
+/* GAME MODE ACTIVE OVERRIDES */
+body.game-mode-active {
+    background: #000 !important;
+    font-family: 'Press Start 2P', cursive !important;
+    cursor: url('https://cur.cursors-4u.net/games/gam-4/gam387.cur'), auto;
+}
+
+body.game-mode-active .card {
+    background: rgba(0, 255, 65, 0.05) !important;
+    border: 2px solid #00ff41 !important;
+    box-shadow: 0 0 15px #00ff41;
+    clip-path: polygon(0% 15%, 15% 0%, 100% 0%, 100% 85%, 85% 100%, 0% 100%);
+    transition: 0.2s;
+}
+
+body.game-mode-active .card:hover {
+    background: rgba(0, 255, 65, 0.2) !important;
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 0 30px #00ff41;
+}
+
+body.game-mode-active .logo {
+    color: #ff003c !important;
+    text-shadow: 3px 3px #00ff41, -3px -3px #00f2ff;
+    animation: glitch 1s infinite;
+}
+
+body.game-mode-active .xp-container {
+    border: 3px solid #ff003c;
+    box-shadow: 0 0 20px #ff003c;
+}
+
+@keyframes glitch {
+    0% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(-2px, -2px); }
+    60% { transform: translate(2px, 2px); }
+    80% { transform: translate(2px, -2px); }
+    100% { transform: translate(0); }
+}

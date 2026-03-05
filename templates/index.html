@@ -3,15 +3,42 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../static/css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" id="gameStyle" href="../static/css/game-mode.css" disabled>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet">
     <meta name="google-site-verification" content="Yi92QYiIeawAKBM_sHu0Rb1DAPY2nrwjUN4VkZguwUg" />
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2805364209433064" crossorigin="anonymous"></script>
     <style>
         /* --- GAME UI UPGRADE --- */
         :root {
             --primary: #00f2ff;
             --secondary: #7000ff;
             --glass: rgba(255, 255, 255, 0.03);
+        }
+
+        /* Floating Game Switch */
+        .game-switch-container {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            z-index: 10000;
+        }
+
+        #gameToggleBtn {
+            background: black;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 10px 15px;
+            font-family: 'Orbitron';
+            font-size: 0.7rem;
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--primary);
+            transition: 0.3s;
+            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
+        }
+
+        #gameToggleBtn.active {
+            background: var(--primary);
+            color: black;
+            box-shadow: 0 0 20px var(--primary);
         }
 
         /* Scanline CRT Effect */
@@ -26,7 +53,7 @@
             max-width: 450px; margin: 25px auto; background: rgba(0, 0, 0, 0.7);
             padding: 20px; border-radius: 10px; border: 1px solid var(--primary);
             box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
-            clip-path: polygon(5% 0, 100% 0, 95% 100%, 0% 100%); /* Tactical Shape */
+            clip-path: polygon(5% 0, 100% 0, 95% 100%, 0% 100%);
         }
 
         .xp-track-outer { width: 100%; height: 12px; background: rgba(255,255,255,0.1); border-radius: 20px; overflow: hidden; }
@@ -37,7 +64,6 @@
             transition: width 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* Feature Cards */
         .features-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
         .card {
             background: var(--glass) !important;
@@ -56,23 +82,19 @@
             color: var(--primary); font-family: 'Orbitron';
         }
 
-        /* Leaderboard Style */
-        .leader-row {
-            display: flex; justify-content: space-between; padding: 12px 5px;
-            border-bottom: 1px solid rgba(255,255,255,0.05); font-family: 'Orbitron';
-        }
-
-        /* Mobile Fixes */
         @media (max-width: 800px) {
             .main-wrapper { display: flex; flex-direction: column; padding: 15px; }
             .features-grid { grid-template-columns: 1fr; }
-            .card h3 { font-size: 1.4rem !important; }
         }
     </style>
 </head>
-<body>
+<body class="normal-mode">
     <div id="particles-js" style="position:fixed; width:100%; height:100%; z-index:-1; background:#05080a;"></div>
     
+    <div class="game-switch-container">
+        <button id="gameToggleBtn" onclick="toggleGameMode()">🕹️ MODE: NORMAL</button>
+    </div>
+
     <nav class="navbar">
         <a href="/" class="logo" style="letter-spacing: 4px;">HUB_OS v1.5</a>
         <div class="nav-links">
@@ -102,21 +124,19 @@
 
     <div class="main-wrapper">
         <div class="features-grid">
-            <div class="card" onclick="location.href='/notes'"><span class="xp-tag">+15 XP</span><h3>📚 Notes</h3><p>Secure Vault</p></div>
-            <div class="card" onclick="location.href='/pyq'"><span class="xp-tag">+15 XP</span><h3>⚡ PYQs</h3><p>Archive Access</p></div>
-            <div class="card" onclick="location.href='/predictor'"><span class="xp-tag">+25 XP</span><h3>📊 Predictor</h3><p>Goal Simulation</p></div>
-            <div class="card" onclick="location.href='/forum'"><span class="xp-tag">+10 XP</span><h3>💬 Forum</h3><p>Neural Link</p></div>
-            <div class="card" onclick="location.href='/schedule'"><span class="xp-tag">+10 XP</span><h3>🎯 Goals</h3><p>Task Manager</p></div>
-            <div class="card" onclick="location.href='/tools'"><h3>🛠️ Tools</h3><p>System Utilities</p></div>
-            <div class="card" onclick="location.href='/profile'"><h3>🛡️ Profile</h3><p>User Meta</p></div>
-            <div class="card" onclick="alert('AI System: Online')"><h3>🤖 Ask AI</h3><p>Core Logic</p></div>
+            <div class="card" onclick="playSfx(); location.href='/notes'"><span class="xp-tag">+15 XP</span><h3>📚 Notes</h3><p>Secure Vault</p></div>
+            <div class="card" onclick="playSfx(); location.href='/pyq'"><span class="xp-tag">+15 XP</span><h3>⚡ PYQs</h3><p>Archive Access</p></div>
+            <div class="card" onclick="playSfx(); location.href='/predictor'"><span class="xp-tag">+25 XP</span><h3>📊 Predictor</h3><p>Goal Simulation</p></div>
+            <div class="card" onclick="playSfx(); location.href='/forum'"><span class="xp-tag">+10 XP</span><h3>💬 Forum</h3><p>Neural Link</p></div>
+            <div class="card" onclick="playSfx(); location.href='/schedule'"><span class="xp-tag">+10 XP</span><h3>🎯 Goals</h3><p>Task Manager</p></div>
+            <div class="card" onclick="playSfx(); location.href='/tools'"><h3>🛠️ Tools</h3><p>System Utilities</p></div>
         </div>
 
         <div class="card" style="height: fit-content; border: 1px solid var(--secondary) !important;">
             <h3 style="color:var(--secondary); font-family: 'Orbitron'; margin-bottom: 15px; font-size: 0.9rem;">🏆 GLOBAL_RANKINGS</h3>
             <div id="leaderboardBox">
                 {% for leader in leaders %}
-                    <div class="leader-row">
+                    <div class="leader-row" style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
                         <span style="font-size: 0.8rem;">{{ loop.index }}. {{ leader['username'] }}</span>
                         <span style="color:var(--primary); font-weight: bold; font-size: 0.75rem;">LVL {{ leader['level'] }}</span>
                     </div>
@@ -127,54 +147,76 @@
 
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script>
-        let xp = parseInt(localStorage.getItem('hXP')) || 0;
-        let lvl = parseInt(localStorage.getItem('hLVL')) || 1;
+        // --- GAME ENGINE LOGIC ---
+        function toggleGameMode() {
+            const gameCss = document.getElementById('gameStyle');
+            const btn = document.getElementById('gameToggleBtn');
+            const isGame = gameCss.disabled;
 
-        async function saveProgress(newLvl, newXp) {
-            if("{{ session['user'] }}") {
-                await fetch('/update_xp', {
-                    method: 'POST', 
-                    headers: {'Content-Type': 'application/json'}, 
-                    body: JSON.stringify({level: newLvl, xp: newXp})
-                });
+            if (isGame) {
+                gameCss.disabled = false;
+                document.body.classList.add('game-mode-active');
+                btn.innerText = "🎮 MODE: GAMING";
+                btn.classList.add('active');
+                localStorage.setItem('hubMode', 'game');
+                playLevelUpSfx();
+            } else {
+                gameCss.disabled = true;
+                document.body.classList.remove('game-mode-active');
+                btn.innerText = "🕹️ MODE: NORMAL";
+                btn.classList.remove('active');
+                localStorage.setItem('hubMode', 'normal');
             }
         }
 
+        // Sound Effects (Simple Beeps)
+        function playSfx() {
+            const context = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = context.createOscillator();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(440, context.currentTime);
+            osc.connect(context.destination);
+            osc.start();
+            osc.stop(context.currentTime + 0.1);
+        }
+
+        function playLevelUpSfx() {
+            const context = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = context.createOscillator();
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(200, context.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(800, context.currentTime + 0.5);
+            osc.connect(context.destination);
+            osc.start();
+            osc.stop(context.currentTime + 0.5);
+        }
+
+        // --- XP ENGINE ---
+        let xp = parseInt(localStorage.getItem('hXP')) || 0;
+        let lvl = parseInt(localStorage.getItem('hLVL')) || 1;
+
         function updateUI() {
             let next = lvl * 100;
-            
             if(xp >= next) {
                 xp -= next;
                 lvl++;
-                saveProgress(lvl, xp); // Turant DB update
-                document.body.style.boxShadow = "inset 0 0 50px var(--primary)";
-                setTimeout(() => document.body.style.boxShadow = "none", 300);
+                playLevelUpSfx();
             }
-
             document.getElementById('xpFill').style.width = (xp / next * 100) + "%";
             document.getElementById('lvl').innerText = lvl;
             document.getElementById('xpText').innerText = `${xp} / ${next} XP`;
-            if(document.getElementById('navLvl')) document.getElementById('navLvl').innerText = "LVL " + lvl;
-            
-            let ranks = ["NOVICE", "ELITE", "MASTER", "LEGEND", "GODLIKE"];
-            document.getElementById('rankName').innerText = "RANK: " + (ranks[Math.floor(lvl/5)] || "GODLIKE");
-
             localStorage.setItem('hXP', xp); 
             localStorage.setItem('hLVL', lvl);
         }
 
-        // Passive XP Gain
-        setInterval(() => {
-            if("{{ session['user'] }}") { xp += 1; updateUI(); }
-        }, 15000);
+        // Check Mode on Load
+        window.onload = () => {
+            if(localStorage.getItem('hubMode') === 'game') toggleGameMode();
+            updateUI();
+        };
 
-        updateUI();
-        particlesJS('particles-js', { particles: { number: { value: 40 }, color: { value: "#00f2ff" }, opacity: { value: 0.2 }, line_linked: { opacity: 0.1 } } });
+        particlesJS('particles-js', { particles: { number: { value: 40 }, color: { value: "#00f2ff" }, opacity: { value: 0.2 } } });
     </script>
-    
-    <script src="https://pl28843487.effectivegatecpm.com/8b/e5/ec/8be5ec537213869fea89bb6105a88ae1.js"></script>
-
-
     <script src="https://pl28843487.effectivegatecpm.com/8b/e5/ec/8be5ec537213869fea89bb6105a88ae1.js"></script>
     <script async="async" data-cfasync="false" src="https://pl28843537.effectivegatecpm.com/7a6e40ba8fe390650b386a0fcd9ea143/invoke.js"></script>
     <div id="container-7a6e40ba8fe390650b386a0fcd9ea143"></div>
