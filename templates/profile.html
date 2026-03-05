@@ -1,90 +1,163 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        .profile-container { max-width: 800px; margin: 50px auto; padding: 20px; }
-        .profile-header { 
-            background: var(--glass); border: 1px solid var(--primary); 
-            padding: 40px; border-radius: 30px; text-align: center;
-            box-shadow: 0 0 30px rgba(59, 130, 246, 0.2);
+        :root {
+            --primary: #00f2ff;
+            --secondary: #7000ff;
         }
-        .avatar-circle {
-            width: 100px; height: 100px; background: linear-gradient(45deg, var(--primary), var(--secondary));
-            border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;
-            font-size: 2.5rem; font-weight: bold; color: black; box-shadow: 0 0 20px var(--primary);
+
+        .profile-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
         }
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 30px; }
-        .stat-card { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; border: 1px solid #333; }
-        .badge-box { margin-top: 30px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 15px; }
-        .badge-icon { font-size: 1.5rem; margin: 5px; filter: grayscale(1); transition: 0.3s; opacity: 0.3; }
-        .badge-unlocked { filter: grayscale(0); opacity: 1; transform: scale(1.1); }
+
+        /* Avatar Section */
+        .avatar-card {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid var(--primary);
+            border-radius: 20px;
+            text-align: center;
+            padding: 30px;
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.2);
+        }
+
+        .avatar-frame {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            border: 4px solid var(--secondary);
+            padding: 5px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            position: relative;
+        }
+
+        .avatar-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: #111;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+        }
+
+        /* Stats Terminal */
+        .stats-terminal {
+            background: rgba(0, 0, 0, 0.8);
+            border-left: 4px solid var(--secondary);
+            padding: 25px;
+            font-family: 'Orbitron', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats-terminal::after {
+            content: "SECURE_CONNECTION";
+            position: absolute;
+            top: 10px; right: 10px;
+            font-size: 0.5rem; color: var(--primary); opacity: 0.5;
+        }
+
+        .stat-line {
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+        }
+
+        .stat-label { color: var(--primary); font-size: 0.7rem; letter-spacing: 2px; }
+        .stat-value { color: #fff; font-size: 1.2rem; display: block; margin-top: 5px; }
+
+        .achievement-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .badge {
+            background: rgba(112, 0, 255, 0.1);
+            border: 1px solid var(--secondary);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.6rem;
+            color: var(--secondary);
+        }
+
+        @media (max-width: 600px) {
+            .profile-container { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
     <nav class="navbar">
-        <a href="/" class="logo">HUB.OS</a>
-        <div class="nav-links"><a href="/">Dashboard</a><a href="/logout" style="color:#f87171;">Exit System</a></div>
+        <a href="/" class="logo">HUB_OS</a>
+        <a href="/" style="text-decoration: none; color: white;">← DASHBOARD</a>
     </nav>
 
     <div class="profile-container">
-        <div class="profile-header">
-            <div class="avatar-circle" id="avatarChar">U</div>
-            <h1 style="font-family:'Orbitron'; margin-bottom: 5px;">{{ session['user'] }}</h1>
-            <p id="rankName" style="color:var(--secondary); letter-spacing: 3px; font-size: 0.8rem;">LOADING RANK...</p>
+        <div class="avatar-card">
+            <div class="avatar-frame">
+                <div class="avatar-img" id="userIcon">👤</div>
+            </div>
+            <h2 id="profileUser" style="color: white; font-family: 'Orbitron'; margin-bottom: 5px;">{{ session['user'] }}</h2>
+            <div id="profileRank" style="color: var(--primary); font-size: 0.8rem; font-weight: bold;">RANK: NOVICE</div>
             
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <small style="opacity:0.6;">CURRENT LEVEL</small>
-                    <h2 id="dispLvl" style="color:var(--primary);">1</h2>
-                </div>
-                <div class="stat-card">
-                    <small style="opacity:0.6;">TOTAL XP</small>
-                    <h2 id="dispXP" style="color:var(--primary);">0</h2>
-                </div>
-                <div class="stat-card">
-                    <small style="opacity:0.6;">ROLE</small>
-                    <h2 style="color:var(--secondary); text-transform: uppercase;">{{ session['role'] }}</h2>
-                </div>
+            <button class="btn-premium" style="margin-top: 20px; width: 100%; font-size: 0.7rem;">CHANGE_AVATAR</button>
+        </div>
+
+        <div class="stats-terminal">
+            <div class="stat-line">
+                <span class="stat-label">CURRENT_LEVEL</span>
+                <span class="stat-value" id="pLvl">01</span>
+            </div>
+            
+            <div class="stat-line">
+                <span class="stat-label">TOTAL_EXPERIENCE</span>
+                <span class="stat-value" id="pXP">0 / 100 XP</span>
             </div>
 
-            <div class="badge-box">
-                <h4 style="margin-bottom:15px; font-size:0.8rem; opacity:0.8;">MILITARY_BADGES_UNLOCKED</h4>
-                <div style="display:flex; justify-content:center; gap:15px;">
-                    <span class="badge-icon" id="owl" title="Night Owl (Study at Night)">🦉</span>
-                    <span class="badge-icon" id="scholar" title="Scholar (Reach Lvl 5)">🎓</span>
-                    <span class="badge-icon" id="warrior" title="Warrior (Reach Lvl 10)">⚔️</span>
-                    <span class="badge-icon" id="legend" title="Legend (Reach Lvl 20)">👑</span>
-                </div>
+            <div class="stat-line">
+                <span class="stat-label">ACCOUNT_STATUS</span>
+                <span class="stat-value" style="color: #4ade80;">VERIFIED_USER</span>
             </div>
-            
-            <button onclick="location.href='/'" class="btn-premium" style="margin-top:30px; width:200px;">BACK TO HUB</button>
+
+            <h4 style="color: var(--primary); font-size: 0.7rem; margin-top: 30px;">ACHIEVEMENTS_UNLOCKED</h4>
+            <div class="achievement-grid">
+                <div class="badge">Early Bird 🐦</div>
+                <div class="badge">Code Runner 💻</div>
+                <div class="badge" style="opacity: 0.3;">Mastermind 🧠 (Locked)</div>
+            </div>
         </div>
     </div>
 
     <script>
-        // Load Data from LocalStorage
+        // Data fetch from LocalStorage for Instant Response
         let xp = parseInt(localStorage.getItem('hXP')) || 0;
         let lvl = parseInt(localStorage.getItem('hLVL')) || 1;
-        let user = "{{ session['user'] }}";
 
-        // Update UI
-        document.getElementById('avatarChar').innerText = user.charAt(0).toUpperCase();
-        document.getElementById('dispLvl').innerText = lvl;
-        document.getElementById('dispXP').innerText = xp;
+        document.getElementById('pLvl').innerText = lvl < 10 ? "0" + lvl : lvl;
+        document.getElementById('pXP').innerText = `${xp} / ${lvl * 100} XP`;
+        
+        // Dynamic Rank & Avatar Logic
+        let rank = "NOVICE";
+        let icon = "👤";
+        if(lvl >= 5) { rank = "ELITE"; icon = "🛡️"; }
+        if(lvl >= 10) { rank = "MASTER"; icon = "⚔️"; }
+        if(lvl >= 20) { rank = "LEGEND"; icon = "👑"; }
 
-        // Rank Logic
-        let r = "Novice Explorer";
-        if(lvl >= 5) { r = "Knowledge Monk"; document.getElementById('scholar').classList.add('badge-unlocked'); }
-        if(lvl >= 10) { r = "Academic Warrior"; document.getElementById('warrior').classList.add('badge-unlocked'); }
-        if(lvl >= 20) { r = "Study Legend"; document.getElementById('legend').classList.add('badge-unlocked'); }
-        document.getElementById('rankName').innerText = r;
-
-        // Night Owl Check (Active between 11PM and 4AM)
-        let hour = new Date().getHours();
-        if(hour >= 23 || hour <= 4) {
-            document.getElementById('owl').classList.add('badge-unlocked');
-        }
+        document.getElementById('profileRank').innerText = "RANK: " + rank;
+        document.getElementById('userIcon').innerText = icon;
     </script>
 </body>
 </html>

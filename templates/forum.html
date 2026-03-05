@@ -69,12 +69,14 @@
             const text = document.getElementById('doubtText').value;
 
             // Sending to Backend (MongoDB)
+            // Is hisse ko update karo
             const response = await fetch('/post_doubt', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ content: text })
+                body: JSON.stringify({ content: text }),
+                // YEH LINE ADD KARO - Isse session cookies backend tak jayengi
+                credentials: 'include' 
             });
-
             if (response.ok) {
                 // Update local XP for visual feel
                 let xp = parseInt(localStorage.getItem('hXP')) || 0;

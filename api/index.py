@@ -174,8 +174,11 @@ def forum():
 
 @app.route('/post_doubt', methods=['POST'])
 def post_doubt():
-    if 'user' not in session:
+    user = session.get('user') # Safer way to get session
+    if not user:
         return jsonify({"error": "Unauthorized"}), 401
+    
+    
     
     data = request.json
     if not data or 'content' not in data:
