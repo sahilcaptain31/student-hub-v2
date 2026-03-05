@@ -245,7 +245,7 @@ def contact(): return render_template('contact.html')
 
 @app.route("/bunk-meter")
 def bunk_meter():
-    return render_template("bunk_meter.html")
+    return render_template("tools.html")
 
 # Essential for Vercel
 app = app
