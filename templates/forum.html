@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        .forum-container { max-width: 900px; margin: 20px auto; padding: 15px; }
+        .post-box { 
+            background: var(--card); border: 1px solid var(--primary); 
+            padding: 20px; border-radius: 20px; margin-bottom: 30px; 
+        }
+        .discussion-card {
+            background: var(--glass); border: 1px solid var(--border);
+            padding: 20px; border-radius: 15px; margin-bottom: 15px;
+            transition: 0.3s;
+        }
+        .discussion-card:hover { border-color: var(--secondary); transform: translateX(5px); }
+        .user-tag { 
+            font-size: 0.7rem; background: var(--secondary); color: white; 
+            padding: 2px 8px; border-radius: 4px; margin-right: 10px;
+        }
+        textarea {
+            width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+            padding: 15px; border-radius: 10px; color: white; resize: none; margin-bottom: 10px;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="logo">HUB.FORUM</a>
+        <a href="/">Back</a>
+    </nav>
+
+    <div class="forum-container">
+        <h1 style="font-family: 'Orbitron'; margin-bottom: 20px;">STUDENT_<span>DISCUSSIONS</span></h1>
+
+        <div class="post-box">
+            <h3 style="color: var(--primary); margin-bottom: 15px;">Ask a Question</h3>
+            <form id="forumForm">
+                <textarea id="doubtText" rows="3" placeholder="What's on your mind? (e.g. Best channel for Discrete Maths?)" required></textarea>
+                <button type="submit" class="btn-premium" style="width: auto;">POST QUESTION</button>
+            </form>
+        </div>
+
+        <h2 style="font-family: 'Orbitron'; font-size: 1.2rem; margin-bottom: 20px;">RECENT_THREADS</h2>
+        
+        <div id="forumThreads">
+            {% if posts %}
+                {% for post in posts %}
+                <div class="discussion-card">
+                    <div style="margin-bottom: 10px;">
+                        <span class="user-tag">LVL {{ post.user_level }}</span>
+                        <strong>{{ post.username }}</strong>
+                    </div>
+                    <p>{{ post.content }}</p>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p style="text-align: center; color: var(--text-dim);">No discussions yet. Be the first to ask!</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('forumForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const text = document.getElementById('doubtText').value;
+
+            // Sending to Backend (MongoDB)
+            const response = await fetch('/post_doubt', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content: text })
+            });
+
+            if (response.ok) {
+                // Update local XP for visual feel
+                let xp = parseInt(localStorage.getItem('hXP')) || 0;
+                xp += 10;
+                localStorage.setItem('hXP', xp);
+                
+                alert("Question Posted! +10 XP Added 🚀");
+                location.reload(); // Refresh to show new post
+            } else {
+                alert("Bhai login karlo pehle!");
+            }
+        });
+    </script>
+</body>
+</html>

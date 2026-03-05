@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, session, jsonify, R
 from pymongo import MongoClient
 import os
 from bson.objectid import ObjectId
+import sqlite3
 
 # Vercel structure: templates aur static folders root mein hain
 app = Flask(__name__, template_folder='../templates', static_folder='../static')
@@ -158,6 +159,52 @@ def privacy(): return render_template('privacy.html')
 
 @app.route('/contact')
 def contact(): return render_template('contact.html')
+
+
+
+
+# --- PHASE 5: FORUM BACKEND (MONGODB) ---
+
+@app.route('/forum')
+def forum():
+    # Database se saare posts nikaalo (Latest posts sabse upar)
+    # yahan hum 'forum_posts' collection use kar rahe hain
+    posts = list(db.forum_posts.find().sort("_id", -1))
+    return render_template('forum.html', posts=posts)
+
+@app.route('/post_doubt', methods=['POST'])
+def post_doubt():
+    if 'user' not in session:
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    data = request.json
+    if not data or 'content' not in data:
+        return jsonify({"error": "Invalid Data"}), 400
+
+    # User ka current data nikalna (Level ke liye)
+    user_data = db.users.find_one({"username": session["user"]})
+    
+    # MongoDB mein entry daalna
+    db.forum_posts.insert_one({
+        "username": session["user"],
+        "user_level": user_data.get('level', 1) if user_data else 1,
+        "content": data['content'],
+        "timestamp": ObjectId().get_generation_time() # Automatic time
+    })
+    
+    # XP Update logic inside post_doubt route
+    db.users.update_one(
+        {"username": session["user"]},
+        {"$inc": {"xp": 10}} # 10 XP increase karega database mein
+    )
+    
+    return jsonify({"success": True})
+
+# --- PHASE 4: PREDICTOR ROUTE ---
+@app.route('/predictor')
+def predictor():
+    return render_template('predictor.html')
+
 
 # Essential for Vercel deployment
 app = app

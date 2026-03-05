@@ -1,55 +1,86 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../static/css/style.css">
-    <title>Notes Vault | Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        .upload-section {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+            border: 2px dashed var(--primary);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .file-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .contribution-card {
+            border-left: 4px solid var(--secondary);
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar">
-        <a href="/" class="logo">HUB.OS</a>
-        <div class="nav-links">
-            <a href="/">Dashboard</a>
-            <span id="navLvl" style="background:var(--secondary); padding:2px 8px; border-radius:5px; font-size:0.7rem;">LVL 1</span>
-        </div>
+        <a href="/" class="logo">HUB.NOTES</a>
+        <a href="/">Back</a>
     </nav>
 
-    <div style="max-width: 1000px; margin: 0 auto; padding: 40px 20px;">
-        <h1 style="font-family:'Orbitron'; color:var(--primary); text-align:center;">NOTES_<span>VAULT</span></h1>
+    <div style="max-width: 1100px; margin: 0 auto; padding: 20px;">
+        <h1 style="font-family: 'Orbitron'; text-align: center; margin-bottom: 30px;">NOTES_<span>VAULT</span></h1>
+
+        <div class="upload-section">
+            <h3 style="color: var(--primary); margin-bottom: 10px;">🚀 Share Notes & Earn +50 XP</h3>
+            <p style="color: var(--text-dim); margin-bottom: 20px; font-size: 0.9rem;">Upload your Drive link to help fellow students.</p>
+            
+            <form id="uploadForm" onsubmit="handleUpload(event)" style="max-width: 500px; margin: 0 auto;">
+                <input type="text" id="subName" placeholder="Subject Name (e.g. Physics Unit 2)" required>
+                <input type="url" id="fileUrl" placeholder="Paste Google Drive Link" required>
+                <button type="submit" class="btn-premium">CONTRIBUTE & GET XP</button>
+            </form>
+        </div>
+
+        <h2 style="font-family: 'Orbitron'; font-size: 1.2rem; margin-bottom: 20px; color: var(--secondary);">AVAILABLE_RESOURCES</h2>
         
-        <div class="grid" style="grid-template-columns: repeat(2, 1fr); margin-top:30px;">
+        <div class="file-grid" id="notesGrid">
             {% for item in items %}
-            <div class="card" style="text-align:left;">
+            <div class="card contribution-card">
                 <h3>{{ item['subject'] }}</h3>
-                <p style="font-size:0.7rem; opacity:0.5; margin-bottom:15px;">Official Study Material</p>
-                
-                <button onclick="viewFile('{{ item['url'] }}')" class="btn-premium" style="width:100%;">VIEW PREVIEW</button>
-                
-                {% if session['role'] == 'admin' %}
-                    <a href="/delete/notes/{{ item['_id'] }}" style="color:red; font-size:0.6rem; display:block; margin-top:10px;">[DELETE]</a>
-                {% endif %}
+                <p style="font-size: 0.8rem; color: var(--text-dim);">Verified Resource</p>
+                <button onclick="window.open('{{ item['url'] }}')" class="btn-premium" style="margin-top: 15px;">VIEW PDF</button>
             </div>
             {% endfor %}
         </div>
     </div>
 
     <script>
-        let xp = parseInt(localStorage.getItem('hXP')) || 0;
-        let lvl = parseInt(localStorage.getItem('hLVL')) || 1;
-        document.getElementById('navLvl').innerText = "LVL " + lvl;
+        function handleUpload(event) {
+            event.preventDefault();
+            const subject = document.getElementById('subName').value;
+            const url = document.getElementById('fileUrl').value;
 
-        function viewFile(url) {
-            // XP Reward for Studying
-            xp += 15; 
-            if(xp >= lvl*100) { xp=0; lvl++; alert("LEVEL UP! 🚀"); }
+            // Give XP Reward
+            let xp = parseInt(localStorage.getItem('hXP')) || 0;
+            let lvl = parseInt(localStorage.getItem('hLVL')) || 1;
+            
+            xp += 50;
+            if(xp >= lvl * 100) { xp = 0; lvl++; alert("LEVEL UP! LVL " + lvl); }
+            
             localStorage.setItem('hXP', xp);
             localStorage.setItem('hLVL', lvl);
-            
-            // BADLAV 3: Direct external link (Google Drive etc.) open hoga
-            if(url && url !== 'None') {
-                window.open(url, '_blank');
-            } else {
-                alert("Error: Link invalid ya missing hai!");
-            }
+
+            // Backend ko data bhej rhe hain (Taki ye database mein save ho jaye)
+            fetch('/upload', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({subject: subject, file_url: url})
+            }).then(() => {
+                alert("Notes Sent for Verification! +50 XP Added 🚀");
+                location.reload();
+            });
         }
     </script>
 </body>
