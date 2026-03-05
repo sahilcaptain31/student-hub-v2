@@ -6,168 +6,174 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <meta name="google-site-verification" content="Yi92QYiIeawAKBM_sHu0Rb1DAPY2nrwjUN4VkZguwUg" />
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2805364209433064" crossorigin="anonymous"></script>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2805364209433064"
-     crossorigin="anonymous"></script>
     <style>
-        /* Gamezone XP Styling */
+        /* --- GAME UI UPGRADE --- */
+        :root {
+            --primary: #00f2ff;
+            --secondary: #7000ff;
+            --glass: rgba(255, 255, 255, 0.03);
+        }
+
+        /* Scanline CRT Effect */
+        body::before {
+            content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            z-index: 999; pointer-events: none; background-size: 100% 3px, 3px 100%;
+        }
+
         .xp-container {
-            max-width: 450px;
-            margin: 25px auto;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 20px;
-            border-radius: 20px;
-            border: 2px solid var(--primary);
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3), inset 0 0 10px rgba(59, 130, 246, 0.2);
-            position: relative;
-            overflow: hidden;
+            max-width: 450px; margin: 25px auto; background: rgba(0, 0, 0, 0.7);
+            padding: 20px; border-radius: 10px; border: 1px solid var(--primary);
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
+            clip-path: polygon(5% 0, 100% 0, 95% 100%, 0% 100%); /* Tactical Shape */
         }
 
-        .xp-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 12px; font-family: 'Orbitron', sans-serif; letter-spacing: 2px;
+        .xp-track-outer { width: 100%; height: 12px; background: rgba(255,255,255,0.1); border-radius: 20px; overflow: hidden; }
+        #xpFill { 
+            height: 100%; width: 0%; 
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            box-shadow: 0 0 10px var(--primary);
+            transition: width 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .rank-label { color: var(--secondary); font-size: 0.7rem; text-shadow: 0 0 5px var(--secondary); }
-        .lvl-badge-main { background: var(--primary); color: #000; padding: 2px 10px; border-radius: 5px; font-weight: bold; font-size: 0.9rem; box-shadow: 0 0 10px var(--primary); }
-
-        .xp-track-outer { width: 100%; height: 18px; background: rgba(255, 255, 255, 0.05); border-radius: 50px; border: 1px solid rgba(255, 255, 255, 0.1); padding: 3px; box-sizing: border-box; }
-        #xpFill { width: 0%; height: 100%; background: linear-gradient(90deg, #3b82f6, #22d3ee, #a855f7); background-size: 200% 200%; border-radius: 50px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); position: relative; animation: gradientMove 3s ease infinite; box-shadow: 0 0 15px var(--primary); }
-        
-        #xpFill::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); animation: scan 2s infinite; }
-        @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        @keyframes scan { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
-        .xp-stats-footer { display: flex; justify-content: flex-end; margin-top: 8px; font-family: 'Orbitron'; font-size: 0.65rem; color: rgba(255,255,255,0.5); }
-
-        /* --- MOBILE SPECIFIC FIXES --- */
-        .main-wrapper {
-            display: grid;
-            grid-template-columns: 2.5fr 1fr;
-            max-width: 1200px;
-            margin: 0 auto;
-            gap: 20px;
-            padding: 20px;
+        /* Feature Cards */
+        .features-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .card {
+            background: var(--glass) !important;
+            border: 1px solid rgba(0, 242, 255, 0.1) !important;
+            backdrop-filter: blur(5px);
+            position: relative; transition: 0.3s;
+        }
+        .card:hover {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
+            transform: scale(1.02);
         }
 
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+        .xp-tag {
+            position: absolute; top: 5px; right: 5px; font-size: 0.6rem;
+            color: var(--primary); font-family: 'Orbitron';
         }
 
+        /* Leaderboard Style */
+        .leader-row {
+            display: flex; justify-content: space-between; padding: 12px 5px;
+            border-bottom: 1px solid rgba(255,255,255,0.05); font-family: 'Orbitron';
+        }
+
+        /* Mobile Fixes */
         @media (max-width: 800px) {
-            .main-wrapper { grid-template-columns: 1fr; } /* Leaderboard goes down */
-            .features-grid { grid-template-columns: 1fr; } /* Icons get big and stack */
-            .hero h1 { font-size: 1.5rem; text-align: center; }
-            .xp-container { width: 90%; }
-            .card h3 { font-size: 1.4rem; } /* Mobile icons/text size fixed */
+            .main-wrapper { display: flex; flex-direction: column; padding: 15px; }
+            .features-grid { grid-template-columns: 1fr; }
+            .card h3 { font-size: 1.4rem !important; }
         }
     </style>
 </head>
 <body>
-    <div id="particles-js" style="position:fixed; width:100%; height:100%; z-index:-1; background:#0b111a;"></div>
+    <div id="particles-js" style="position:fixed; width:100%; height:100%; z-index:-1; background:#05080a;"></div>
     
     <nav class="navbar">
-        <a href="/" class="logo">STUDENT_HUB</a>
+        <a href="/" class="logo" style="letter-spacing: 4px;">HUB_OS v1.5</a>
         <div class="nav-links">
             {% if session['user'] %}
-                {% if session['role'] == 'admin' %}<a href="/admin" style="color:var(--primary); font-weight:bold;">[ADMIN]</a>{% endif %}
-                <span id="navLvl" style="background:var(--secondary); padding:2px 8px; border-radius:5px; font-size:0.75rem; font-weight: bold; color: black;">LVL 1</span>
-                <a href="/logout">Exit</a>
+                <span id="navLvl" style="border: 1px solid var(--secondary); padding:2px 8px; font-size:0.7rem; color: var(--secondary);">LVL 1</span>
+                <a href="/logout">Terminal.Exit()</a>
             {% else %}
-                <a href="/login">Login</a><a href="/register" class="btn-premium">Join</a>
+                <a href="/login">Login</a><a href="/register" class="btn-premium">Initialize</a>
             {% endif %}
         </div>
     </nav>
 
     <div class="hero">
-        <h1 style="font-family: 'Orbitron'; text-align: center; margin-top: 20px;">System Access: <span style="color: var(--primary);">{{ session['user'] if session['user'] else 'Explorer' }}</span></h1>
+        <h2 style="font-family: 'Orbitron'; text-align: center; color: white; font-size: 1rem; margin-top: 20px; opacity: 0.8;">
+            ACTIVE_USER: <span style="color: var(--primary);">{{ session['user'] if session['user'] else 'ANONYMOUS' }}</span>
+        </h2>
         
         <div class="xp-container">
-            <div class="xp-header">
-                <span class="rank-label" id="rankName">RANK: NOVICE</span>
-                <span class="lvl-badge-main">LVL <span id="lvl">1</span></span>
+            <div class="xp-header" style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span id="rankName" style="color: var(--secondary); font-family: 'Orbitron'; font-size: 0.7rem;">RANK: NOVICE</span>
+                <span style="color: var(--primary); font-family: 'Orbitron'; font-size: 0.8rem;">LVL <span id="lvl">1</span></span>
             </div>
-            <div class="xp-track-outer">
-                <div id="xpFill"></div>
-            </div>
-            <div class="xp-stats-footer">
-                <span id="xpText">0 / 100 XP</span>
-            </div>
+            <div class="xp-track-outer"><div id="xpFill"></div></div>
+            <div id="xpText" style="text-align: right; font-size: 0.6rem; color: #555; margin-top: 5px; font-family: 'Orbitron';">0/100 XP</div>
         </div>
     </div>
 
     <div class="main-wrapper">
-        
         <div class="features-grid">
-            <div class="card" onclick="location.href='/notes'"><h3>📚 Notes</h3><p>+15 XP</p></div>
-            <div class="card" onclick="location.href='/pyq'"><h3>⚡ PYQs</h3><p>+15 XP</p></div>
-            <div class="card" onclick="location.href='/tools'"><h3>📊 CGPA Cal</h3><p>+25 XP</p></div>
-            <div class="card" onclick="location.href='/tools'"><h3>🧠 Focus</h3><p>+20 XP</p></div>
-            <div class="card" onclick="location.href='/schedule'"><h3>🎯 Goals</h3><p>+10 XP</p></div>
-            <div class="card" onclick="location.href='/tools'"><h3>🚶 Bunk</h3><p>+5 XP</p></div>
-            <div class="card" onclick="location.href='/profile'"><h3>🛡️ Profile</h3><p>Stats</p></div>
-            <div class="card" onclick="alert('AI Buddy Online!')"><h3>🤖 Ask AI</h3><p>Help</p></div>
+            <div class="card" onclick="location.href='/notes'"><span class="xp-tag">+15 XP</span><h3>📚 Notes</h3><p>Secure Vault</p></div>
+            <div class="card" onclick="location.href='/pyq'"><span class="xp-tag">+15 XP</span><h3>⚡ PYQs</h3><p>Archive Access</p></div>
+            <div class="card" onclick="location.href='/predictor'"><span class="xp-tag">+25 XP</span><h3>📊 Predictor</h3><p>Goal Simulation</p></div>
+            <div class="card" onclick="location.href='/forum'"><span class="xp-tag">+10 XP</span><h3>💬 Forum</h3><p>Neural Link</p></div>
+            <div class="card" onclick="location.href='/schedule'"><span class="xp-tag">+10 XP</span><h3>🎯 Goals</h3><p>Task Manager</p></div>
+            <div class="card" onclick="location.href='/tools'"><h3>🛠️ Tools</h3><p>System Utilities</p></div>
+            <div class="card" onclick="location.href='/profile'"><h3>🛡️ Profile</h3><p>User Meta</p></div>
+            <div class="card" onclick="alert('AI System: Online')"><h3>🤖 Ask AI</h3><p>Core Logic</p></div>
         </div>
 
-        <div class="card" style="background:var(--glass); border: 1px solid rgba(59, 130, 246, 0.2); height: fit-content;">
-            <h3 style="color:var(--primary); font-family: 'Orbitron'; margin-bottom: 15px;">🏆 LEADERBOARD</h3>
-            {% for leader in leaders %}
-                <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05);">
-                    <span style="font-size: 0.9rem;">{{ loop.index }}. {{ leader['username'] }}</span>
-                    <span style="color:var(--secondary); font-weight: bold; font-size: 0.8rem;">LVL {{ leader['level'] }}</span>
-                </div>
-            {% endfor %}
+        <div class="card" style="height: fit-content; border: 1px solid var(--secondary) !important;">
+            <h3 style="color:var(--secondary); font-family: 'Orbitron'; margin-bottom: 15px; font-size: 0.9rem;">🏆 GLOBAL_RANKINGS</h3>
+            <div id="leaderboardBox">
+                {% for leader in leaders %}
+                    <div class="leader-row">
+                        <span style="font-size: 0.8rem;">{{ loop.index }}. {{ leader['username'] }}</span>
+                        <span style="color:var(--primary); font-weight: bold; font-size: 0.75rem;">LVL {{ leader['level'] }}</span>
+                    </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script>
-        // Logic same hai as before
         let xp = parseInt(localStorage.getItem('hXP')) || 0;
         let lvl = parseInt(localStorage.getItem('hLVL')) || 1;
 
+        async function saveProgress(newLvl, newXp) {
+            if("{{ session['user'] }}") {
+                await fetch('/update_xp', {
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify({level: newLvl, xp: newXp})
+                });
+            }
+        }
+
         function updateUI() {
             let next = lvl * 100;
-            let percent = (xp / next) * 100;
-            document.getElementById('xpFill').style.width = percent + "%";
+            
+            if(xp >= next) {
+                xp -= next;
+                lvl++;
+                saveProgress(lvl, xp); // Turant DB update
+                document.body.style.boxShadow = "inset 0 0 50px var(--primary)";
+                setTimeout(() => document.body.style.boxShadow = "none", 300);
+            }
+
+            document.getElementById('xpFill').style.width = (xp / next * 100) + "%";
             document.getElementById('lvl').innerText = lvl;
             document.getElementById('xpText').innerText = `${xp} / ${next} XP`;
             if(document.getElementById('navLvl')) document.getElementById('navLvl').innerText = "LVL " + lvl;
             
-            let rank = "NOVICE";
-            if(lvl >= 5) rank = "ELITE";
-            if(lvl >= 10) rank = "MASTER";
-            if(lvl >= 20) rank = "LEGEND";
-            document.getElementById('rankName').innerText = "RANK: " + rank;
+            let ranks = ["NOVICE", "ELITE", "MASTER", "LEGEND", "GODLIKE"];
+            document.getElementById('rankName').innerText = "RANK: " + (ranks[Math.floor(lvl/5)] || "GODLIKE");
 
             localStorage.setItem('hXP', xp); 
             localStorage.setItem('hLVL', lvl);
         }
 
+        // Passive XP Gain
         setInterval(() => {
-            if("{{ session['user'] }}") {
-                xp += 2; 
-                if(xp >= lvl * 100) { 
-                    xp = 0; lvl++; 
-                    fetch('/update_xp', {
-                        method: 'POST', 
-                        headers: {'Content-Type': 'application/json'}, 
-                        body: JSON.stringify({level: lvl, xp: xp})
-                    }); 
-                }
-                updateUI();
-            }
+            if("{{ session['user'] }}") { xp += 1; updateUI(); }
         }, 15000);
 
         updateUI();
-        particlesJS('particles-js', { particles: { number: { value: 40 }, opacity: { value: 0.2 }, line_linked: { opacity: 0.1 } } });
+        particlesJS('particles-js', { particles: { number: { value: 40 }, color: { value: "#00f2ff" }, opacity: { value: 0.2 }, line_linked: { opacity: 0.1 } } });
     </script>
+    
+    <script src="https://pl28843487.effectivegatecpm.com/8b/e5/ec/8be5ec537213869fea89bb6105a88ae1.js"></script>
 
-    <footer style="text-align: center; padding: 20px; opacity: 0.6; font-size: 0.8rem;">
-        <a href="/about" style="color:white; text-decoration:none;">About Us</a> |
-        <a href="/privacy" style="color:white; text-decoration:none;">Privacy Policy</a> |
-        <a href="/contact" style="color:white; text-decoration:none;">Contact Us</a>
-    </footer>
 
     <script src="https://pl28843487.effectivegatecpm.com/8b/e5/ec/8be5ec537213869fea89bb6105a88ae1.js"></script>
     <script async="async" data-cfasync="false" src="https://pl28843537.effectivegatecpm.com/7a6e40ba8fe390650b386a0fcd9ea143/invoke.js"></script>
