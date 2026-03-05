@@ -10,6 +10,15 @@ app = Flask(__name__, template_folder='../templates', static_folder='../static')
 # SECURITY: Secret key for session management
 app.secret_key = os.getenv("SECRET_KEY", "dev_secret_key_123")
 
+
+app.config.update(
+    SESSION_COOKIE_NAME='session',
+    SESSION_COOKIE_SAMESITE='Lax',
+    SESSION_COOKIE_SECURE=True,    # Vercel HTTPS use karta hai toh isse True rakho
+    SESSION_COOKIE_HTTPONLY=True,
+    PERMANENT_SESSION_LIFETIME=600 # 10 minutes tak session rahega
+)
+
 # MONGODB CONNECTION
 MONGO_URI = os.getenv("MONGO_URI")
 client = MongoClient(MONGO_URI)
@@ -52,6 +61,7 @@ def login():
         u, p = request.form["username"], request.form["password"]
         user = db.users.find_one({"username": u, "password": p})
         if user:
+            session.permanent = True # <-- YE LINE ADD KARO
             session["user"] = user["username"]
             session["role"] = user["role"]
             return redirect("/")
