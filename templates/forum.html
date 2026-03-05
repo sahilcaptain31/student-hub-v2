@@ -67,26 +67,33 @@
         document.getElementById('forumForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const text = document.getElementById('doubtText').value;
+            
+            // Jinhe humne login ke waqt save kiya tha (Agar localStorage mein username nahi hai toh prompt karega)
+            const currentUser = "{{ session['user'] }}"; 
 
-            // Sending to Backend (MongoDB)
-            // Is hisse ko update karo
+            if (!currentUser || currentUser === "None") {
+                alert("Bhai pehle login toh karlo!");
+                window.location.href = "/login";
+                return;
+            }
+
             const response = await fetch('/post_doubt', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ content: text }),
-                // YEH LINE ADD KARO - Isse session cookies backend tak jayengi
-                credentials: 'include' 
+                body: JSON.stringify({ 
+                    content: text,
+                    username: currentUser // Username yahan se bhej rahe hain
+                })
             });
+
             if (response.ok) {
-                // Update local XP for visual feel
                 let xp = parseInt(localStorage.getItem('hXP')) || 0;
                 xp += 10;
                 localStorage.setItem('hXP', xp);
-                
-                alert("Question Posted! +10 XP Added 🚀");
-                location.reload(); // Refresh to show new post
+                alert("Question Posted! +10 XP 🚀");
+                location.reload();
             } else {
-                alert("Bhai login karlo pehle!");
+                alert("Server Error: Post nahi ho paya.");
             }
         });
     </script>

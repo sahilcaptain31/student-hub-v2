@@ -184,31 +184,28 @@ def forum():
 
 @app.route('/post_doubt', methods=['POST'])
 def post_doubt():
-    user = session.get('user') # Safer way to get session
-    if not user:
+    data = request.json
+    # Session ke bajaye data se username uthao
+    username = data.get('username') or session.get('user')
+    
+    if not username:
         return jsonify({"error": "Unauthorized"}), 401
     
-    
-    
-    data = request.json
     if not data or 'content' not in data:
         return jsonify({"error": "Invalid Data"}), 400
 
-    # User ka current data nikalna (Level ke liye)
-    user_data = db.users.find_one({"username": session["user"]})
+    user_data = db.users.find_one({"username": username})
     
-    # MongoDB mein entry daalna
     db.forum_posts.insert_one({
-        "username": session["user"],
+        "username": username,
         "user_level": user_data.get('level', 1) if user_data else 1,
         "content": data['content'],
-        "timestamp": ObjectId().get_generation_time() # Automatic time
+        "timestamp": ObjectId().get_generation_time()
     })
     
-    # XP Update logic inside post_doubt route
     db.users.update_one(
-        {"username": session["user"]},
-        {"$inc": {"xp": 10}} # 10 XP increase karega database mein
+        {"username": username},
+        {"$inc": {"xp": 10}}
     )
     
     return jsonify({"success": True})
