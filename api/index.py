@@ -182,6 +182,41 @@ def delete_item(doc_type, id):
         db[doc_type].delete_one({"_id": ObjectId(id)})
     return redirect("/admin")
 
+
+# --- REPLY SYSTEM ---
+@app.route('/post_reply/<post_id>', methods=['POST'])
+def post_reply(post_id):
+    username = session.get('user')
+    if not username:
+        return jsonify({"error": "Login required"}), 401
+    
+    data = request.json
+    reply_text = data.get('reply')
+    
+    if not reply_text:
+        return jsonify({"error": "Reply cannot be empty"}), 400
+
+    # Post update karke usme comment array mein data daalna
+    db.forum_posts.update_one(
+        {"_id": ObjectId(post_id)},
+        {"$push": {
+            "replies": {
+                "username": username,
+                "content": reply_text,
+                "timestamp": datetime.utcnow()
+            }
+        }}
+    )
+    return jsonify({"success": True})
+
+# --- ADMIN DELETE POST ---
+@app.route('/delete_post/<post_id>')
+def delete_post(post_id):
+    if session.get("role") == "admin":
+        db.forum_posts.delete_one({"_id": ObjectId(post_id)})
+        return redirect('/forum')
+    return "Unauthorized", 403
+
 # --- UTILS ---
 
 @app.route('/sitemap.xml')
