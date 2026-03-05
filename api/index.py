@@ -2,25 +2,27 @@ from flask import Flask, render_template, request, redirect, session, jsonify, R
 from pymongo import MongoClient
 import os
 from bson.objectid import ObjectId
-import sqlite3
+from datetime import datetime
 
-# Vercel structure: templates aur static folders root mein hain
+# Vercel structure
 app = Flask(__name__, template_folder='../templates', static_folder='../static')
 
 # SECURITY: Secret key for session management
 app.secret_key = os.getenv("SECRET_KEY", "dev_secret_key_123")
 
-
+# VERCEL SESSION FIX: Cookie settings
 app.config.update(
     SESSION_COOKIE_NAME='session',
     SESSION_COOKIE_SAMESITE='Lax',
-    SESSION_COOKIE_SECURE=True,    # Vercel HTTPS use karta hai toh isse True rakho
+    SESSION_COOKIE_SECURE=True,
     SESSION_COOKIE_HTTPONLY=True,
-    PERMANENT_SESSION_LIFETIME=600 # 10 minutes tak session rahega
+    PERMANENT_SESSION_LIFETIME=600
 )
 
 # MONGODB CONNECTION
 MONGO_URI = os.getenv("MONGO_URI")
+if not MONGO_URI:
+    print("CRITICAL: MONGO_URI not found in Environment Variables!")
 client = MongoClient(MONGO_URI)
 db = client.student_hub_db
 
@@ -28,7 +30,6 @@ db = client.student_hub_db
 
 @app.route("/")
 def home():
-    # Leaderboard ke liye top 5 users
     leaders = list(db.users.find({}, {"_id": 0, "username": 1, "level": 1}).sort([("level", -1), ("xp", -1)]).limit(5))
     return render_template("index.html", leaders=leaders)
 
@@ -38,7 +39,6 @@ def register():
         u, p = request.form["username"], request.form["password"]
         secret_input = request.form.get("admin_secret", "")
         
-        # Admin check via environment variable
         MASTER_ADMIN_CODE = os.getenv("ADMIN_CODE") 
         role = 'admin' if MASTER_ADMIN_CODE and secret_input == MASTER_ADMIN_CODE else 'user'
         
@@ -50,7 +50,8 @@ def register():
             "password": p, 
             "role": role, 
             "level": 1, 
-            "xp": 0
+            "xp": 0,
+            "joined_at": datetime.utcnow()
         })
         return redirect("/login")
     return render_template("register.html")
@@ -61,7 +62,7 @@ def login():
         u, p = request.form["username"], request.form["password"]
         user = db.users.find_one({"username": u, "password": p})
         if user:
-            session.permanent = True # <-- YE LINE ADD KARO
+            session.permanent = True 
             session["user"] = user["username"]
             session["role"] = user["role"]
             return redirect("/")
@@ -81,9 +82,10 @@ def update_xp():
             {"username": session["user"]}, 
             {"$set": {"level": data['level'], "xp": data['xp']}}
         )
-    return jsonify({"status": "ok"})
+        return jsonify({"status": "ok"})
+    return jsonify({"status": "error", "message": "Unauthorized"}), 401
 
-# --- DASHBOARD CONTENT ROUTES (Ye buttons ko activate karenge) ---
+# --- CONTENT ROUTES ---
 
 @app.route("/notes")
 def notes():
@@ -97,12 +99,10 @@ def pyq():
 
 @app.route("/tools")
 def tools():
-    # Isse CGPA, Bunk Meter, aur Focus Timer kaam karne lagenge
     return render_template("tools.html")
 
 @app.route("/schedule")
 def schedule():
-    # Isse Study Planner aur Exam Countdown khulega
     return render_template("schedule.html")
 
 @app.route("/profile")
@@ -110,6 +110,45 @@ def profile():
     if "user" not in session: return redirect("/login")
     user_data = db.users.find_one({"username": session["user"]})
     return render_template("profile.html", user=user_data)
+
+# --- PHASE 5: FORUM SYSTEM ---
+
+@app.route('/forum')
+def forum():
+    posts = list(db.forum_posts.find().sort("_id", -1))
+    return render_template('forum.html', posts=posts)
+
+@app.route('/post_doubt', methods=['POST'])
+def post_doubt():
+    data = request.json
+    # Frontend se direct username uthana (Vercel session backup)
+    username = data.get('username') or session.get('user')
+    
+    if not username or username == "None":
+        return jsonify({"error": "Session Expired! Please login again."}), 401
+    
+    content = data.get('content')
+    if not content or len(content.strip()) == 0:
+        return jsonify({"error": "Content cannot be empty!"}), 400
+
+    user_data = db.users.find_one({"username": username})
+    current_lvl = user_data.get('level', 1) if user_data else 1
+    
+    # Entry in Forum
+    db.forum_posts.insert_one({
+        "username": username,
+        "user_level": current_lvl,
+        "content": content,
+        "timestamp": datetime.utcnow()
+    })
+    
+    # Give XP
+    db.users.update_one(
+        {"username": username},
+        {"$inc": {"xp": 10}}
+    )
+    
+    return jsonify({"success": True})
 
 # --- ADMIN ROUTES ---
 
@@ -143,23 +182,19 @@ def delete_item(doc_type, id):
         db[doc_type].delete_one({"_id": ObjectId(id)})
     return redirect("/admin")
 
-# --- SEO & FOOTER PAGES ---
+# --- UTILS ---
 
 @app.route('/sitemap.xml')
 def sitemap():
-    pages = [
-        "https://student-hub-v2.vercel.app/",
-        "https://student-hub-v2.vercel.app/notes",
-        "https://student-hub-v2.vercel.app/pyq",
-        "https://student-hub-v2.vercel.app/about",
-        "https://student-hub-v2.vercel.app/contact",
-        "https://student-hub-v2.vercel.app/privacy"
-    ]
+    pages = ["https://student-hub-v2.vercel.app/", "https://student-hub-v2.vercel.app/notes"]
     xml = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
     for page in pages:
-        xml += f'<url><loc>{page}</loc><changefreq>daily</changefreq></url>'
+        xml += f'<url><loc>{page}</loc></url>'
     xml += '</urlset>'
     return Response(xml, mimetype='application/xml')
+
+@app.route('/predictor')
+def predictor(): return render_template('predictor.html')
 
 @app.route('/about')
 def about(): return render_template('about.html')
@@ -170,51 +205,5 @@ def privacy(): return render_template('privacy.html')
 @app.route('/contact')
 def contact(): return render_template('contact.html')
 
-
-
-
-# --- PHASE 5: FORUM BACKEND (MONGODB) ---
-
-@app.route('/forum')
-def forum():
-    # Database se saare posts nikaalo (Latest posts sabse upar)
-    # yahan hum 'forum_posts' collection use kar rahe hain
-    posts = list(db.forum_posts.find().sort("_id", -1))
-    return render_template('forum.html', posts=posts)
-
-@app.route('/post_doubt', methods=['POST'])
-def post_doubt():
-    data = request.json
-    # Session ke bajaye data se username uthao
-    username = data.get('username') or session.get('user')
-    
-    if not username:
-        return jsonify({"error": "Unauthorized"}), 401
-    
-    if not data or 'content' not in data:
-        return jsonify({"error": "Invalid Data"}), 400
-
-    user_data = db.users.find_one({"username": username})
-    
-    db.forum_posts.insert_one({
-        "username": username,
-        "user_level": user_data.get('level', 1) if user_data else 1,
-        "content": data['content'],
-        "timestamp": ObjectId().get_generation_time()
-    })
-    
-    db.users.update_one(
-        {"username": username},
-        {"$inc": {"xp": 10}}
-    )
-    
-    return jsonify({"success": True})
-
-# --- PHASE 4: PREDICTOR ROUTE ---
-@app.route('/predictor')
-def predictor():
-    return render_template('predictor.html')
-
-
-# Essential for Vercel deployment
+# Essential for Vercel
 app = app

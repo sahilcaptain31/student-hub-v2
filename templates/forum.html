@@ -93,7 +93,9 @@
                 alert("Question Posted! +10 XP 🚀");
                 location.reload();
             } else {
-                alert("Server Error: Post nahi ho paya.");
+                // YE LINE CHANGE KARO: Backend se error message padho
+                const errorData = await response.json();
+                alert("Backend Error: " + errorData.error); 
             }
         });
     </script>
