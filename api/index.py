@@ -154,12 +154,15 @@ def post_doubt():
 
 @app.route("/admin")
 def admin():
+    # Double check security
     if session.get("role") != "admin": 
-        return "403: Access Denied!", 403
+        return "<h1>403: ACCESS DENIED</h1><p>You do not have ROOT privileges.</p>", 403
     
+    # Fetch data for admin to manage
     all_users = list(db.users.find())
     all_notes = list(db.notes.find())
     all_pyqs = list(db.pyq.find())
+    
     return render_template("admin.html", users=all_users, notes=all_notes, pyqs=all_pyqs)
 
 @app.route("/upload", methods=["POST"])
@@ -239,6 +242,10 @@ def privacy(): return render_template('privacy.html')
 
 @app.route('/contact')
 def contact(): return render_template('contact.html')
+
+@app.route("/bunk-meter")
+def bunk_meter():
+    return render_template("bunk_meter.html")
 
 # Essential for Vercel
 app = app

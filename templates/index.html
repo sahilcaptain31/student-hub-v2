@@ -6,7 +6,7 @@
     <link rel="stylesheet" id="gameStyle" href="../static/css/game-mode.css" disabled>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #00f2ff; --secondary: #7000ff; --glass: rgba(255, 255, 255, 0.05); }
+        :root { --primary: #00f2ff; --secondary: #7000ff; --danger: #ff003c; --glass: rgba(255, 255, 255, 0.05); }
 
         /* Floating Game Switch */
         .game-switch-container { position: fixed; right: 20px; bottom: 20px; z-index: 10000; }
@@ -67,7 +67,7 @@
     <div class="main-wrapper">
         <div class="xp-container" style="background: rgba(0,0,0,0.7); padding: 20px; border-radius: 10px; border: 1px solid var(--primary);">
             <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-family: 'Orbitron'; color: var(--primary); font-size: 0.8rem;">
-                <span>STATUS: {% if session['user'] == 'admin' %}ROOT_OVERLORD{% elif session['user'] %}ACTIVE_OPERATIVE{% else %}GUEST_VIEWER{% endif %}</span>
+                <span>STATUS: {% if session['role'] == 'admin' %}ROOT_OVERLORD{% elif session['user'] %}ACTIVE_OPERATIVE{% else %}GUEST_VIEWER{% endif %}</span>
                 <span>LVL <span id="lvl">{{ user_level if user_level else '1' }}</span></span>
             </div>
             <div style="width: 100%; height: 10px; background: rgba(255,255,255,0.1); border-radius: 5px; overflow: hidden;">
@@ -94,16 +94,17 @@
             <div class="card" onclick="location.href='/schedule'"><span class="xp-tag">+15 XP</span><h3>🎯 Mission Tracker</h3><p>Daily goals & schedule management.</p></div>
             <div class="card" onclick="location.href='/tools'"><span class="xp-tag">+5 XP</span><h3>🛠️ System Tools</h3><p>Productivity utilities & calculators.</p></div>
             
-            <div class="card" onclick="location.href='/gpa-calc'" style="border-color: var(--secondary);">
-                <span class="xp-tag">+10 XP</span>
-                <h3 style="color: var(--secondary);">🧮 GPA Master</h3>
-                <p>Calculate your Semester GPA & CGPA instantly.</p>
+            <div class="card" onclick="location.href='/bunk-meter'" style="border-color: var(--danger);">
+                <span class="xp-tag" style="color: var(--danger);">UTILITY</span>
+                <h3 style="color: var(--danger);">📉 Bunk Meter</h3>
+                <p>Calculate safe bunks & maintain your 75% attendance mission.</p>
             </div>
 
-            {% if session['user'] == 'admin' %}
-            <div class="card" onclick="location.href='/upload'" style="border: 1px dashed #ff003c; background: rgba(255,0,60,0.05);">
-                <h3 style="color: #ff003c;">📤 Data Upload</h3>
-                <p>Add or modify system resources.</p>
+            {% if session['role'] == 'admin' %}
+            <div class="card" onclick="location.href='/admin'" style="border: 2px dashed #ff003c; background: rgba(255,0,60,0.1);">
+                <span class="xp-tag" style="color: #ff003c;">ROOT_ACCESS</span>
+                <h3 style="color: #ff003c;">📤 Admin Panel</h3>
+                <p>Upload Notes, PYQs & manage system database.</p>
             </div>
             {% else %}
             <div class="card" onclick="location.href='/profile'">
@@ -139,7 +140,6 @@
 
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script>
-        // Toggle Logic
         function toggleGameMode() {
             const gameBox = document.getElementById('gameModule');
             const btn = document.getElementById('gameToggleBtn');
@@ -150,21 +150,13 @@
 
         particlesJS('particles-js', { particles: { number: { value: 40 }, color: { value: "#00f2ff" }, opacity: { value: 0.2 } } });
 
-        // GAME ENGINE
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        let gameActive = false;
-        let score = 0;
-        let p = { x: 185, y: 370, w: 30, h: 20 };
-        let bullets = [];
-        let enemies = [];
+        let gameActive = false, score = 0, p = { x: 185, y: 370, w: 30, h: 20 }, bullets = [], enemies = [];
 
         function startGame() {
             if(gameActive) return;
-            gameActive = true;
-            score = 0;
-            enemies = [];
-            bullets = [];
+            gameActive = true; score = 0; enemies = []; bullets = [];
             document.getElementById('gStatus').innerText = "ACTIVE";
             document.getElementById('gStatus').style.color = "#00ff00";
             update();
@@ -173,44 +165,27 @@
         function update() {
             if(!gameActive) return;
             ctx.clearRect(0,0,400,400);
-            
-            // Player
-            ctx.fillStyle = "#00f2ff";
-            ctx.fillRect(p.x, p.y, p.w, p.h);
+            ctx.fillStyle = "#00f2ff"; ctx.fillRect(p.x, p.y, p.w, p.h);
 
-            // Bullets
             bullets.forEach((b, i) => {
-                b.y -= 5;
-                ctx.fillStyle = "#ff003c";
-                ctx.fillRect(b.x, b.y, 4, 10);
+                b.y -= 5; ctx.fillStyle = "#ff003c"; ctx.fillRect(b.x, b.y, 4, 10);
                 if(b.y < 0) bullets.splice(i, 1);
             });
 
-            // Enemies
             if(Math.random() < 0.03) enemies.push({x: Math.random()*370, y: 0});
             enemies.forEach((en, i) => {
-                en.y += 2;
-                ctx.fillStyle = "#7000ff";
-                ctx.fillRect(en.x, en.y, 25, 25);
-
-                // Collision with player
+                en.y += 2; ctx.fillStyle = "#7000ff"; ctx.fillRect(en.x, en.y, 25, 25);
                 if(en.y > p.y && en.x > p.x && en.x < p.x + p.w) {
                     gameActive = false;
                     document.getElementById('gStatus').innerText = "DESTROYED";
-                    document.getElementById('gStatus').style.color = "#ff003c";
                 }
-
-                // Collision with bullets
                 bullets.forEach((b, bi) => {
                     if(b.x > en.x && b.x < en.x+25 && b.y < en.y+25) {
-                        enemies.splice(i, 1);
-                        bullets.splice(bi, 1);
-                        score += 10;
-                        document.getElementById('gScore').innerText = score;
+                        enemies.splice(i, 1); bullets.splice(bi, 1);
+                        score += 10; document.getElementById('gScore').innerText = score;
                     }
                 });
             });
-
             requestAnimationFrame(update);
         }
 
@@ -218,9 +193,7 @@
             const rect = canvas.getBoundingClientRect();
             p.x = e.clientX - rect.left - 15;
         });
-        canvas.addEventListener('click', () => {
-            if(gameActive) bullets.push({x: p.x + 13, y: p.y});
-        });
+        canvas.addEventListener('click', () => { if(gameActive) bullets.push({x: p.x + 13, y: p.y}); });
     </script>
 
     <script src="https://pl28843487.effectivegatecpm.com/8b/e5/ec/8be5ec537213869fea89bb6105a88ae1.js"></script>
