@@ -1,40 +1,51 @@
-/* GAME MODE ACTIVE OVERRIDES */
+/* FULL IMMERSION GAME UI */
 body.game-mode-active {
-    background: #000 !important;
-    font-family: 'Press Start 2P', cursive !important;
-    cursor: url('https://cur.cursors-4u.net/games/gam-4/gam387.cur'), auto;
+    background: radial-gradient(circle at center, #1a1a2e 0%, #0f0f1a 100%) !important;
+    overflow-x: hidden;
+    font-family: 'Orbitron', sans-serif !important;
 }
 
-body.game-mode-active .card {
-    background: rgba(0, 255, 65, 0.05) !important;
-    border: 2px solid #00ff41 !important;
-    box-shadow: 0 0 15px #00ff41;
-    clip-path: polygon(0% 15%, 15% 0%, 100% 0%, 100% 85%, 85% 100%, 0% 100%);
-    transition: 0.2s;
+/* Moving Starfield Background Effect */
+body.game-mode-active::after {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: url('https://www.transparenttextures.com/patterns/stardust.png');
+    opacity: 0.3;
+    z-index: -1;
+    animation: backgroundScroll 60s linear infinite;
 }
 
-body.game-mode-active .card:hover {
-    background: rgba(0, 255, 65, 0.2) !important;
-    transform: translateY(-5px) scale(1.05);
-    box-shadow: 0 0 30px #00ff41;
+@keyframes backgroundScroll {
+    from { background-position: 0 0; }
+    to { background-position: 0 -1000px; }
 }
 
-body.game-mode-active .logo {
-    color: #ff003c !important;
-    text-shadow: 3px 3px #00ff41, -3px -3px #00f2ff;
-    animation: glitch 1s infinite;
+/* Tactical Sci-Fi Cards */
+body.game-mode-active .card, 
+body.game-mode-active .discussion-card,
+body.game-mode-active .post-box {
+    background: rgba(15, 15, 30, 0.85) !important;
+    border: 1px solid #00f2ff !important;
+    box-shadow: 0 0 20px rgba(0, 242, 255, 0.15), inset 0 0 10px rgba(0, 242, 255, 0.1);
+    border-radius: 0 !important;
+    clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0% 30%);
+    backdrop-filter: blur(10px);
 }
 
+/* Gaming HUD style Navbar */
+body.game-mode-active .navbar {
+    background: rgba(0, 0, 0, 0.9) !important;
+    border-bottom: 2px solid #7000ff !important;
+    box-shadow: 0 5px 20px rgba(112, 0, 255, 0.3);
+}
+
+/* Relaxing Pulse Animation */
 body.game-mode-active .xp-container {
-    border: 3px solid #ff003c;
-    box-shadow: 0 0 20px #ff003c;
+    animation: pulseGlow 4s ease-in-out infinite;
 }
 
-@keyframes glitch {
-    0% { transform: translate(0); }
-    20% { transform: translate(-2px, 2px); }
-    40% { transform: translate(-2px, -2px); }
-    60% { transform: translate(2px, 2px); }
-    80% { transform: translate(2px, -2px); }
-    100% { transform: translate(0); }
+@keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 15px rgba(0, 242, 255, 0.2); }
+    50% { box-shadow: 0 0 30px rgba(0, 242, 255, 0.4); }
 }
