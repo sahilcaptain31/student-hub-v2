@@ -8,156 +8,137 @@
     <style>
         :root { 
             --primary: #00f2ff; --secondary: #7000ff; --danger: #ff003c; 
-            --success: #00ff88; --bg: #05080a; --glass: rgba(255, 255, 255, 0.05); 
+            --gold: #ffcc00; --bg: #05080a; --glass: rgba(255, 255, 255, 0.05); 
         }
 
         * { box-sizing: border-box; transition: 0.3s ease; }
         body { background: var(--bg); color: white; font-family: 'Share Tech Mono', monospace; margin: 0; overflow-x: hidden; }
 
-        /* --- UI切换 Logic --- */
+        /* --- UI Logic --- */
         #gamingDashboard { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 9999; }
 
         /* --- Navbar --- */
         .navbar { 
             display: flex; justify-content: space-between; align-items: center; 
-            padding: 15px 5%; background: rgba(0,0,0,0.9); border-bottom: 1px solid var(--glass);
+            padding: 15px 5%; background: rgba(0,0,0,0.9); border-bottom: 1px solid var(--primary);
             position: sticky; top: 0; z-index: 1000;
         }
-        .logo { font-family: 'Orbitron'; letter-spacing: 3px; color: var(--primary); text-decoration: none; font-weight: bold; }
+        .logo { font-family: 'Orbitron'; letter-spacing: 3px; color: var(--primary); text-decoration: none; font-weight: bold; text-shadow: 0 0 10px var(--primary); }
 
-        /* --- Main Content --- */
         .main-wrapper { max-width: 1200px; margin: 0 auto; padding: 20px; }
 
-        /* --- Guest Hero Section --- */
-        .hero-guest {
-            text-align: center; padding: 80px 20px; border: 1px solid var(--primary);
-            background: rgba(0, 242, 255, 0.02); border-radius: 20px; margin-top: 50px;
-            box-shadow: 0 0 30px rgba(0, 242, 255, 0.1);
-        }
-
-        /* --- User Stats Bar --- */
+        /* --- Stats Card --- */
         .xp-card { 
-            background: rgba(0,0,0,0.8); padding: 20px; border: 1px solid var(--primary); 
-            border-radius: 12px; margin-bottom: 30px; position: relative;
+            background: linear-gradient(45deg, rgba(0,0,0,0.9), rgba(0,242,255,0.05)); 
+            padding: 20px; border: 1px solid var(--primary); border-radius: 12px; margin-bottom: 30px;
         }
-        .xp-bar-bg { width: 100%; height: 10px; background: #111; border-radius: 5px; overflow: hidden; margin-top: 10px; }
-        .xp-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); transition: 1s cubic-bezier(0.17, 0.67, 0.83, 0.67); }
+        .xp-bar-bg { width: 100%; height: 12px; background: #111; border-radius: 6px; overflow: hidden; margin-top: 10px; border: 1px solid rgba(0,242,255,0.2); }
+        .xp-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); box-shadow: 0 0 15px var(--primary); }
 
-        /* --- Grid & Cards --- */
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        /* --- Modern Grid --- */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; }
         .card { 
             background: var(--glass); border: 1px solid rgba(0, 242, 255, 0.1); 
-            padding: 25px; border-radius: 15px; cursor: pointer; position: relative;
+            padding: 20px; border-radius: 12px; cursor: pointer; position: relative; overflow: hidden;
         }
-        .card:hover { border-color: var(--primary); transform: translateY(-5px); box-shadow: 0 0 20px rgba(0, 242, 255, 0.1); }
-        .card h3 { font-family: 'Orbitron'; color: var(--primary); margin: 0 0 10px 0; font-size: 1.1rem; }
-        .card p { font-size: 0.85rem; opacity: 0.7; }
-        .xp-tag { position: absolute; top: 15px; right: 15px; font-size: 0.6rem; color: var(--secondary); font-weight: bold; }
-        
-        .admin-card { border: 2px dashed var(--danger) !important; background: rgba(255, 0, 60, 0.05); }
+        .card::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(0,242,255,0.1), transparent); transition: 0.5s; }
+        .card:hover::before { left: 100%; }
+        .card:hover { border-color: var(--primary); transform: scale(1.02); background: rgba(0,242,255,0.05); }
+        .card h3 { font-family: 'Orbitron'; color: var(--primary); margin: 0 0 8px 0; font-size: 0.9rem; letter-spacing: 1px; }
+        .card p { font-size: 0.75rem; opacity: 0.6; line-height: 1.4; }
+        .xp-tag { position: absolute; top: 10px; right: 10px; font-size: 0.6rem; color: var(--secondary); font-weight: bold; border: 1px solid var(--secondary); padding: 2px 5px; border-radius: 4px; }
 
-        /* --- Task Section --- */
-        .task-container { 
-            background: rgba(255, 255, 255, 0.02); border: 1px solid var(--glass); 
-            padding: 20px; border-radius: 15px; margin-top: 30px;
+        /* --- Leaderboard (Improved) --- */
+        .leaderboard-container { 
+            margin-top: 40px; background: rgba(0,0,0,0.7); border: 1px solid var(--gold); 
+            border-radius: 15px; padding: 25px; box-shadow: 0 0 20px rgba(255, 204, 0, 0.1);
         }
-        .task-item { 
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        .task-item.completed span { text-decoration: line-through; opacity: 0.5; }
+        .leaderboard-header { font-family: 'Orbitron'; color: var(--gold); display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; font-size: 0.7rem; color: var(--gold); padding: 12px; border-bottom: 1px solid rgba(255, 204, 0, 0.2); }
+        td { padding: 15px 12px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.85rem; }
+        tr:hover { background: rgba(255, 204, 0, 0.05); }
 
         /* --- Gaming HUD --- */
-        .hud-layout { display: flex; height: 100vh; padding: 15px; gap: 15px; }
-        .side-hud { width: 250px; border: 1px solid rgba(0, 242, 255, 0.2); background: rgba(0,242,255,0.02); padding: 20px; display: flex; flex-direction: column; justify-content: space-between; }
-        .center-game { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        #gameCanvas { background: #000; border: 2px solid var(--primary); box-shadow: 0 0 40px rgba(0,242,255,0.2); touch-action: none; max-width: 100%; }
-
-        /* --- Switch Button --- */
-        .switch-container { position: fixed; right: 25px; bottom: 25px; z-index: 10001; }
+        #gameCanvas { background: #000; border: 2px solid var(--primary); cursor: crosshair; }
+        .switch-container { position: fixed; right: 20px; bottom: 20px; z-index: 10001; }
         #toggleBtn {
             background: #000; border: 2px solid var(--primary); color: var(--primary);
-            padding: 12px 24px; font-family: 'Orbitron'; font-size: 0.7rem; cursor: pointer;
-            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
+            padding: 12px 20px; font-family: 'Orbitron'; font-size: 0.7rem; cursor: pointer;
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
         }
 
-        @media (max-width: 850px) {
-            .hud-layout { flex-direction: column; overflow-y: auto; }
-            .side-hud { width: 100%; height: auto; flex-direction: row; }
-            .navbar { padding: 10px 20px; }
+        @media (max-width: 768px) {
+            .navbar { padding: 10px 15px; }
+            .logo { font-size: 0.9rem; }
         }
     </style>
 </head>
 <body>
 
     <nav class="navbar">
-        <a href="/" class="logo">STUDENT_HUB_OS</a>
+        <a href="/" class="logo">STUDENT_HUB_OS_v4.0</a>
         <div class="nav-links">
             {% if session['user'] %}
-                <a href="/profile" style="color: var(--primary); text-decoration: none; font-size: 0.8rem; margin-right: 15px;">[ MY_PROFILE ]</a>
-                <a href="/logout" style="color: var(--danger); text-decoration: none; border: 1px solid var(--danger); padding: 5px 10px; font-size: 0.7rem;">TERMINATE</a>
+                <a href="/profile" style="color: var(--primary); text-decoration: none; font-size: 0.7rem; margin-right: 15px; border: 1px solid var(--primary); padding: 4px 8px;">MY_PROFILE</a>
+                <a href="/logout" style="color: var(--danger); text-decoration: none; font-size: 0.7rem;">[EXIT]</a>
             {% else %}
                 <a href="/login" style="color: var(--primary); text-decoration: none; margin-right: 15px; font-size: 0.8rem;">LOGIN</a>
-                <a href="/register" style="background: var(--primary); color: #000; padding: 6px 15px; text-decoration: none; font-weight: bold; font-size: 0.7rem;">REGISTER</a>
+                <a href="/register" style="background: var(--primary); color: #000; padding: 5px 15px; text-decoration: none; font-weight: bold; font-size: 0.7rem; font-family: 'Orbitron';">JOIN_CORE</a>
             {% endif %}
         </div>
     </nav>
 
     <div class="main-wrapper">
         {% if not session['user'] %}
-            <div class="hero-guest">
-                <h1 style="font-family: 'Orbitron'; font-size: 2.5rem; margin: 0;">SYSTEM_LOCKED</h1>
-                <p style="opacity: 0.6; margin: 20px 0;">Authentication required to access Study Modules, Profile and Gaming HUD.</p>
-                <div style="display: flex; justify-content: center; gap: 15px;">
+            <div style="text-align: center; padding: 80px 20px; border: 1px solid var(--primary); border-radius: 20px; background: rgba(0, 242, 255, 0.02); margin-top: 50px;">
+                <h1 style="font-family: 'Orbitron'; color: var(--primary); letter-spacing: 5px;">ACCESS_DENIED</h1>
+                <p style="opacity: 0.6; margin-bottom: 30px;">Initialize authentication to sync neural modules and folders.</p>
+                <div style="display: flex; justify-content: center; gap: 20px;">
                     <button onclick="location.href='/login'" style="background: transparent; border: 1px solid var(--primary); color: var(--primary); padding: 12px 30px; font-family: 'Orbitron'; cursor: pointer;">LOGIN</button>
-                    <button onclick="location.href='/register'" style="background: var(--primary); color: #000; border: none; padding: 12px 30px; font-family: 'Orbitron'; font-weight: bold; cursor: pointer;">SIGN_UP</button>
+                    <button onclick="location.href='/register'" style="background: var(--primary); border: none; color: black; padding: 12px 30px; font-family: 'Orbitron'; font-weight: bold; cursor: pointer;">REGISTER</button>
                 </div>
             </div>
         {% else %}
             <div id="normalDashboard">
                 <div class="xp-card">
-                    <div style="display: flex; justify-content: space-between; font-family: 'Orbitron'; font-size: 0.7rem; color: var(--primary);">
-                        <span>STATUS: {% if session['role'] == 'admin' %}ROOT_OVERLORD{% else %}ACTIVE_OPERATIVE{% endif %}</span>
-                        <span>LEVEL: <span id="lvl">{{ user_level if user_level else '1' }}</span></span>
+                    <div style="display: flex; justify-content: space-between; font-family: 'Orbitron'; font-size: 0.65rem; color: var(--primary);">
+                        <span>OPERATIVE: {{ session['user']|upper }}</span>
+                        <span>LEVEL: {{ user_level if user_level else '1' }}</span>
                     </div>
-                    <div class="xp-bar-bg"><div id="xpFill" class="xp-fill" style="width: {{ user_xp if user_xp else '10' }}%;"></div></div>
+                    <div class="xp-bar-bg"><div class="xp-fill" style="width: {{ user_xp if user_xp else '10' }}%;"></div></div>
                 </div>
 
                 <div class="grid">
-                    <div class="card" onclick="location.href='/notes'"><span class="xp-tag">+15 XP</span><h3>📚 Study Vault</h3><p>Access notes & PDFs.</p></div>
-                    <div class="card" onclick="location.href='/pyq'"><span class="xp-tag">+20 XP</span><h3>⚡ PYQ Archive</h3><p>Previous year papers.</p></div>
-                    <div class="card" onclick="location.href='/tools'"><h3 style="color:var(--success)">🛠️ System Tools</h3><p>Calculators & Neural GPT.</p></div>
-                    <div class="card" onclick="location.href='/profile'"><h3>👤 My Profile</h3><p>View stats & badges.</p></div>
-                    <div class="card" onclick="location.href='/bunk-meter'"><h3 style="color:var(--danger)">📉 Bunk Meter</h3><p>Attendance tracker.</p></div>
-                    <div class="card" onclick="location.href='/predictor'"><span class="xp-tag">+50 XP</span><h3>📊 Rank Predictor</h3><p>Neural rank analysis.</p></div>
+                    <div class="card" onclick="location.href='/notes'"><span class="xp-tag">+15 XP</span><h3>📚 notes.html</h3><p>Access neural study vault and PDF modules.</p></div>
+                    <div class="card" onclick="location.href='/pyq'"><span class="xp-tag">+20 XP</span><h3>⚡ pyq.html</h3><p>Retrieve previous year combat papers.</p></div>
+                    <div class="card" onclick="location.href='/predictor'"><span class="xp-tag">+50 XP</span><h3>📊 predictor.html</h3><p>Analyze rank through neural prediction.</p></div>
+                    <div class="card" onclick="location.href='/forum'"><span class="xp-tag">+10 XP</span><h3>💬 forum.html</h3><p>Global encrypted discussion board.</p></div>
+                    <div class="card" onclick="location.href='/tools'"><h3 style="color:var(--gold)">🛠️ tools.html</h3><p>Calculators, Task Manager & System Gear.</p></div>
+                    <div class="card" onclick="location.href='/schedule'"><h3 style="color:#00ff88">📅 schedule.html</h3><p>Daily routine & Exam deadlines.</p></div>
+                    <div class="card" onclick="location.href='/bunk-meter'"><h3 style="color:var(--danger)">📉 bunk-meter</h3><p>Monitor attendance threshold.</p></div>
+                    <div class="card" onclick="location.href='/about'"><h3 style="opacity:0.7">ℹ️ about.html</h3><p>System v4.0 documentation.</p></div>
                     
                     {% if session['role'] == 'admin' %}
-                    <div class="card admin-card" onclick="location.href='/admin'">
-                        <h3 style="color:var(--danger)">📤 Admin Control</h3>
-                        <p>Manage resources & users.</p>
+                    <div class="card" style="border: 2px dashed var(--danger);" onclick="location.href='/admin'">
+                        <h3 style="color:var(--danger)">☣️ admin.html</h3>
+                        <p>Root access: Upload resources & manage users.</p>
                     </div>
                     {% endif %}
                 </div>
 
-                <div class="task-container">
-                    <h3 style="font-family: 'Orbitron'; color: var(--primary); font-size: 0.9rem;">📋 NEURAL_TASKS (Task XP)</h3>
-                    <div id="taskList">
-                        <div class="task-item"><span>Read Physics Chapter 1</span> <button onclick="this.parentElement.classList.toggle('completed')" style="background:var(--success); border:none; cursor:pointer; font-size:0.6rem;">DONE</button></div>
-                        <div class="task-item"><span>Solve 10 Math PYQs</span> <button onclick="this.parentElement.classList.toggle('completed')" style="background:var(--success); border:none; cursor:pointer; font-size:0.6rem;">DONE</button></div>
-                    </div>
-                    <div style="display: flex; gap: 10px; margin-top: 15px;">
-                        <input type="text" id="newTask" placeholder="Add custom task..." style="flex-grow:1; background:#000; border:1px solid var(--glass); color:white; padding:10px;">
-                        <button onclick="addNewTask()" style="background:var(--primary); color:black; border:none; padding:10px 20px; font-weight:bold; cursor:pointer;">ADD</button>
-                    </div>
-                </div>
-
-                <div class="leaderboard" style="margin-top: 40px; background: rgba(0,0,0,0.5); border: 1px solid gold; border-radius: 15px; padding: 20px;">
-                    <h3 style="margin: 0; font-family: 'Orbitron'; color: gold; font-size: 0.9rem;">🏆 TOP_OPERATIVES</h3>
+                <div class="leaderboard-container">
+                    <div class="leaderboard-header"><span>🏆</span> TOP_OPERATIVES_GLOBAL</div>
                     <table>
-                        <thead><tr><th>RANK</th><th>NAME</th><th>LEVEL</th></tr></thead>
+                        <thead><tr><th>RANK</th><th>OPERATIVE</th><th>LEVEL</th><th>STATUS</th></tr></thead>
                         <tbody>
                             {% for leader in leaders %}
-                            <tr><td>#{{ loop.index }}</td><td>{{ leader.username }}</td><td style="color:var(--primary)">LVL {{ leader.level }}</td></tr>
+                            <tr>
+                                <td>#{{ loop.index }}</td>
+                                <td style="font-weight:bold; color:var(--primary)">{{ leader.username }}</td>
+                                <td>LVL {{ leader.level }}</td>
+                                <td style="color:var(--gold); font-size:0.6rem;">● ONLINE</td>
+                            </tr>
                             {% endfor %}
                         </tbody>
                     </table>
@@ -167,22 +148,17 @@
     </div>
 
     <div id="gamingDashboard">
-        <div class="hud-layout">
-            <div class="side-hud">
-                <div>
-                    <h4 style="font-family:'Orbitron'; color:var(--primary); font-size:0.7rem;">OS_INFO</h4>
-                    <p style="font-size:0.6rem; opacity:0.6;">USER: {{ session['user']|upper if session['user'] else 'GUEST' }}</p>
-                    <p style="font-size:0.6rem; opacity:0.6;">SYNC: <span id="hud-xp-sync">{{ user_xp }}</span>%</p>
-                </div>
+        <div style="display:flex; height:100vh; padding:20px; gap:20px;">
+            <div style="width:200px; border-right:1px solid var(--primary); padding-right:20px;">
+                <h4 style="font-family:'Orbitron'; color:var(--primary); font-size:0.7rem;">SIM_STATS</h4>
+                <p style="font-size:0.6rem; opacity:0.6;">SCORE: <span id="gScore">0</span></p>
+                <p style="font-size:0.6rem; opacity:0.6;">XP_POTENTIAL: +<span id="xpG">0</span></p>
+                <hr style="border:0; border-top:1px solid var(--glass);">
+                <button onclick="toggleGameMode()" style="background:var(--danger); border:none; color:white; width:100%; padding:10px; cursor:pointer; font-family:'Orbitron'; font-size:0.6rem;">ABORT_MISSION</button>
             </div>
-            <div class="center-game">
-                <h2 style="font-family:'Press Start 2P'; font-size:0.6rem; color:var(--primary); margin-bottom:20px;">NEURAL_EXTERMINATOR</h2>
-                <canvas id="gameCanvas" width="350" height="400"></canvas>
-                <div style="margin-top:15px; font-family:'Orbitron'; font-size:0.8rem;">SCORE: <span id="gScore">0</span> | <span id="gStatus" style="color:var(--danger)">READY</span></div>
-                <button onclick="startGame()" style="margin-top:15px; padding:10px 30px; background:transparent; border:1px solid var(--primary); color:var(--primary); font-family:'Orbitron'; cursor:pointer;">START_MISSION</button>
-            </div>
-            <div class="side-hud">
-                <button onclick="toggleGameMode()" style="background:var(--danger); border:none; color:black; padding:10px; font-family:'Orbitron'; font-weight:bold; cursor:pointer;">ABORT</button>
+            <div style="flex-grow:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                <canvas id="gameCanvas" width="400" height="500"></canvas>
+                <button onclick="startGame()" id="sBtn" style="margin-top:20px; background:var(--primary); border:none; padding:10px 40px; font-family:'Orbitron'; font-weight:bold; cursor:pointer;">START_NEURAL_COMBAT</button>
             </div>
         </div>
     </div>
@@ -205,75 +181,55 @@
             document.body.style.overflow = isGuest ? 'hidden' : 'auto';
         }
 
-        function addNewTask() {
-            const val = document.getElementById('newTask').value;
-            if(!val) return;
-            const list = document.getElementById('taskList');
-            const item = document.createElement('div');
-            item.className = "task-item";
-            item.innerHTML = `<span>${val}</span> <button onclick="this.parentElement.classList.toggle('completed')" style="background:var(--success); border:none; cursor:pointer; font-size:0.6rem;">DONE</button>`;
-            list.appendChild(item);
-            document.getElementById('newTask').value = "";
-        }
-
+        // --- Game Logic ---
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        let gameActive = false, score = 0, p = { x: 160, y: 360, w: 30, h: 20 }, bullets = [], enemies = [];
+        let gameActive = false, score = 0, p = { x: 185, y: 460, w: 30, h: 15 }, bullets = [], enemies = [];
 
         function startGame() {
             if(gameActive) return;
             gameActive = true; score = 0; enemies = []; bullets = [];
-            document.getElementById('gStatus').innerText = "ACTIVE";
-            document.getElementById('gStatus').style.color = "#00ff00";
+            document.getElementById('sBtn').style.display = 'none';
             update();
         }
 
         function update() {
             if(!gameActive) return;
-            ctx.clearRect(0,0,350,400);
-            ctx.fillStyle = "#00f2ff"; ctx.fillRect(p.x, p.y, p.w, p.h);
+            ctx.clearRect(0,0,400,500);
+            ctx.fillStyle = "#00f2ff"; ctx.fillRect(p.x, p.y, p.w, p.h); // Player
+
             bullets.forEach((b, i) => {
-                b.y -= 8; ctx.fillStyle = "#ff003c"; ctx.fillRect(b.x, b.y, 3, 10);
+                b.y -= 7; ctx.fillStyle = "#ff003c"; ctx.fillRect(b.x, b.y, 3, 10);
                 if(b.y < 0) bullets.splice(i, 1);
             });
-            if(Math.random() < 0.05) enemies.push({x: Math.random()*320, y: 0});
+
+            if(Math.random() < 0.04) enemies.push({x: Math.random()*370, y: 0});
             enemies.forEach((en, i) => {
-                en.y += 3.5; ctx.fillStyle = "#7000ff"; ctx.fillRect(en.x, en.y, 22, 22);
-                if(en.y > p.y && en.x > p.x && en.x < p.x + p.w) {
+                en.y += 3; ctx.fillStyle = "#7000ff"; ctx.fillRect(en.x, en.y, 25, 25);
+                if(en.y > 460 && en.x > p.x && en.x < p.x + p.w) {
                     gameActive = false;
-                    document.getElementById('gStatus').innerText = "FAILED";
-                    syncXP(score);
+                    alert("SIMULATION_FAILED! Score: " + score);
+                    location.reload();
                 }
                 bullets.forEach((b, bi) => {
-                    if(b.x > en.x && b.x < en.x+22 && b.y < en.y+22) {
+                    if(b.x > en.x && b.x < en.x+25 && b.y < en.y+25) {
                         enemies.splice(i, 1); bullets.splice(bi, 1);
-                        score += 10; document.getElementById('gScore').innerText = score;
+                        score += 10; 
+                        document.getElementById('gScore').innerText = score;
+                        document.getElementById('xpG').innerText = Math.floor(score/5);
                     }
                 });
             });
             requestAnimationFrame(update);
         }
 
-        const movePlayer = (e) => {
+        canvas.addEventListener('mousemove', (e) => {
             const rect = canvas.getBoundingClientRect();
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            p.x = clientX - rect.left - 15;
-            if(p.x < 0) p.x = 0; if(p.x > 320) p.x = 320;
-        };
-        canvas.addEventListener('mousemove', movePlayer);
-        canvas.addEventListener('touchmove', movePlayer);
-        canvas.addEventListener('click', () => { if(gameActive) bullets.push({x: p.x + 13, y: p.y}); });
-
-        function syncXP(s) {
-            let xpGained = Math.floor(s / 2);
-            fetch('/update_xp', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({xp_gained: xpGained})
-            }).then(() => location.reload());
-        }
+            p.x = e.clientX - rect.left - 15;
+        });
+        canvas.addEventListener('click', () => { if(gameActive) bullets.push({x: p.x+13, y: p.y}); });
     </script>
-
+    
     <script src="https://pl28843487.effectivegatecpm.com/8b/e5/ec/8be5ec537213869fea89bb6105a88ae1.js"></script>
     <script async="async" data-cfasync="false" src="https://pl28843537.effectivegatecpm.com/7a6e40ba8fe390650b386a0fcd9ea143/invoke.js"></script>
     <div id="container-7a6e40ba8fe390650b386a0fcd9ea143"></div>
