@@ -37,6 +37,7 @@ def home():
 def register():
     if request.method == "POST":
         u, p = request.form["username"], request.form["password"]
+        gender = request.form.get("gender", "male") # Radio button se value aayegi
         secret_input = request.form.get("admin_secret", "")
         
         MASTER_ADMIN_CODE = os.getenv("ADMIN_CODE") 
@@ -51,6 +52,7 @@ def register():
             "role": role, 
             "level": 1, 
             "xp": 0,
+            "gender": gender, # Gender field save ho gayi
             "joined_at": datetime.utcnow()
         })
         return redirect("/login")

@@ -1,15 +1,71 @@
 <!DOCTYPE html>
 <html>
-<head><link rel="stylesheet" href="../static/css/style.css"></head>
-<body style="display:flex; align-items:center; justify-content:center; height:100vh; background:#0b111a;">
-    <div class="card" style="width:320px;">
-        <h2 style="color:var(--secondary);">CREATE_ID</h2>
+<head>
+    <link rel="stylesheet" href="../static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        .avatar-selection { display: flex; gap: 20px; margin: 15px 0; justify-content: center; }
+        .avatar-option { 
+            cursor: pointer; border: 2px solid transparent; border-radius: 10px; 
+            padding: 5px; transition: 0.3s; text-align: center;
+        }
+        .avatar-option img { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; }
+        .avatar-option p { font-size: 0.6rem; margin-top: 5px; color: #666; }
+        
+        /* Hidden Radio Buttons */
+        input[type="radio"] { display: none; }
+        input[type="radio"]:checked + .avatar-option { 
+            border-color: var(--primary); background: rgba(0, 242, 255, 0.1); 
+            box-shadow: 0 0 15px var(--primary);
+        }
+        input[type="radio"]:checked + .avatar-option p { color: var(--primary); font-weight: bold; }
+        
+        .register-box { width: 350px; background: rgba(0,0,0,0.8); padding: 30px; border-radius: 20px; border: 1px solid var(--primary); }
+    </style>
+</head>
+<body style="display:flex; align-items:center; justify-content:center; min-height:100vh; background:#05080a; font-family: 'Orbitron', sans-serif;">
+    
+    <div class="register-box">
+        <h2 style="color:var(--primary); text-align: center; letter-spacing: 3px;">INITIALIZE_USER</h2>
+        <p style="font-size: 0.6rem; color: #444; text-align: center; margin-bottom: 20px;">CHOOSE YOUR NEURAL AVATAR</p>
+        
         <form method="POST">
-            <input type="text" name="username" placeholder="Username" required>
-            <input type="password" name="password" placeholder="Password" required>
-            <input type="password" name="admin_secret" placeholder="Admin Code (Optional)" style="font-size:0.7rem;">
-            <button type="submit" class="btn-premium" style="width:100%; margin-top:10px;">REGISTER</button>
+            <div class="avatar-selection">
+                <label>
+                    <input type="radio" name="gender" value="male" checked>
+                    <div class="avatar-option">
+                        <img src="https://i.pinimg.com/736x/8e/7e/10/8e7e101186716a4f94086e3951f2f811.jpg" alt="Boy">
+                        <p>BOY_UNIT</p>
+                    </div>
+                </label>
+                
+                <label>
+                    <input type="radio" name="gender" value="female">
+                    <div class="avatar-option">
+                        <img src="https://i.pinimg.com/originals/80/4d/6c/804d6c69784365780d6f4693a109a06f.jpg" alt="Girl">
+                        <p>ANGEL_UNIT</p>
+                    </div>
+                </label>
+            </div>
+
+            <input type="text" name="username" placeholder="OPERATIVE_NAME" required 
+                   style="width:100%; background:rgba(255,255,255,0.05); border:1px solid #333; color:white; padding:12px; margin-bottom:10px; border-radius:5px;">
+            
+            <input type="password" name="password" placeholder="ACCESS_KEY" required 
+                   style="width:100%; background:rgba(255,255,255,0.05); border:1px solid #333; color:white; padding:12px; margin-bottom:10px; border-radius:5px;">
+            
+            <input type="password" name="admin_secret" placeholder="ADMIN_PATCH_CODE (OPTIONAL)" 
+                   style="width:100%; background:rgba(255,255,255,0.05); border:1px solid #333; color:white; padding:12px; font-size:0.7rem; border-radius:5px;">
+            
+            <button type="submit" class="btn-premium" style="width:100%; margin-top:20px; padding:15px; font-weight:bold; cursor:pointer; background:var(--primary); border:none; clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);">
+                CREATE_IDENTITY
+            </button>
         </form>
+        
+        <p style="text-align:center; font-size:0.7rem; margin-top:15px;">
+            <a href="/login" style="color:#666; text-decoration:none;">ALREADY_REGISTERED? LOGIN</a>
+        </p>
     </div>
+
 </body>
 </html>
