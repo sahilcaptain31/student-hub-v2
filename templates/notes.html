@@ -57,6 +57,26 @@
     </div>
 
     <script>
+
+        // --- ADSTERRA SMARTLINK FUNCTION ---
+        function paisaWalaDownload(up4everLink) {
+            // Tumhara Smartlink yahan hai
+            const smartLink = "https://www.effectivegatecpm.com/wu8rn0xa?key=b85ba7da0189c934b5b86b55ab2582b6";
+
+            // 1. Pehle naye tab mein ad khulegi
+            window.open(smartLink, '_blank');
+
+            // 2. Phir 1 second baad asli file link par bhej denge
+            setTimeout(function() {
+                if(up4everLink && up4everLink !== 'None') {
+                    window.location.href = up4everLink;
+                } else {
+                    alert("Link valid nahi hai!");
+                }
+            }, 1000);
+        }
+
+
         function handleUpload(event) {
             event.preventDefault();
             const subject = document.getElementById('subName').value;
