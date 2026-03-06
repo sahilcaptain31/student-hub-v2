@@ -19,10 +19,11 @@
         .avatar-frame { 
             width: 180px; height: 180px; border: 3px solid var(--neon-blue); 
             border-radius: 50%; padding: 8px; box-shadow: 0 0 20px var(--neon-blue);
+            background: #000;
         }
         .avatar-frame img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
         
-        .user-info h1 { font-size: 2.5rem; margin: 0; text-transform: uppercase; letter-spacing: 5px; }
+        .user-info h1 { font-size: 2.5rem; margin: 0; text-transform: uppercase; letter-spacing: 5px; color: white; }
         .rank-tag { color: var(--neon-blue); font-size: 0.8rem; margin-top: 5px; display: block; }
 
         /* Stats Grid */
@@ -38,7 +39,7 @@
             display: flex; justify-content: space-between; padding: 15px; background: rgba(0,0,0,0.3);
             margin-bottom: 10px; border-radius: 10px; border-left: 3px solid #333;
         }
-        .task-item.done { border-left-color: #00ff00; }
+        .task-item.done { border-left-color: #00ff00; background: rgba(0, 255, 0, 0.05); }
         
         .badge-icon { width: 60px; height: 60px; filter: grayscale(1); opacity: 0.3; transition: 0.3s; }
         .badge-icon.unlocked { filter: grayscale(0); opacity: 1; transform: scale(1.1); }
@@ -49,9 +50,9 @@
         <div class="header-box">
             <div class="avatar-frame">
                 {% if user.gender == 'female' %}
-                    <img src="https://i.pinimg.com/originals/80/4d/6c/804d6c69784365780d6f4693a109a06f.jpg" alt="Angel">
+                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Angel&backgroundColor=b6e3f4" alt="Angel Operator">
                 {% else %}
-                    <img src="https://i.pinimg.com/736x/8e/7e/10/8e7e101186716a4f94086e3951f2f811.jpg" alt="Boy">
+                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Felix&backgroundColor=00f2ff" alt="Boy Operator">
                 {% endif %}
             </div>
             <div class="user-info">
@@ -65,33 +66,37 @@
         </div>
 
         <div class="stats-grid">
-            <div class="stat-item"><span>TOTAL_XP</span><b>{{ (user.level * 100) + user.xp }}</b></div>
-            <div class="stat-item"><span>MISSIONS</span><b>{{ user.tasks|length }}</b></div>
-            <div class="stat-item"><span>REPUTATION</span><b>{{ user.level * 10 }}</b></div>
+            <div class="stat-item"><span>TOTAL_XP</span><b>{{ (user.level|int * 100) + user.xp|int }}</b></div>
+            <div class="stat-item"><span>MISSIONS</span><b>{{ user.tasks|length if user.tasks else 0 }}</b></div>
+            <div class="stat-item"><span>REPUTATION</span><b>{{ user.level|int * 10 }}</b></div>
         </div>
 
         <div class="grid-2">
             <div class="card-box">
                 <h3 style="color: var(--neon-blue); margin-top: 0;">⚡ ACTIVE_MISSIONS</h3>
-                {% for task in user.tasks %}
-                <div class="task-item {% if task.status == 'completed' %}done{% endif %}">
-                    <div>
-                        <div style="font-size: 0.9rem;">{{ task.title }}</div>
-                        <div style="font-size: 0.6rem; color: #555;">REWARD: +{{ task.xp }} XP</div>
+                {% if user.tasks %}
+                    {% for task in user.tasks %}
+                    <div class="task-item {% if task.status == 'completed' %}done{% endif %}">
+                        <div>
+                            <div style="font-size: 0.9rem;">{{ task.title }}</div>
+                            <div style="font-size: 0.6rem; color: #555;">REWARD: +{{ task.xp }} XP</div>
+                        </div>
+                        <div style="font-size: 0.7rem; color: {% if task.status == 'completed' %}#00ff00{% else %}#ff003c{% endif %};">
+                            {{ task.status|upper }}
+                        </div>
                     </div>
-                    <div style="font-size: 0.7rem; color: {% if task.status == 'completed' %}#00ff00{% else %}#ff003c{% endif %};">
-                        {{ task.status|upper }}
-                    </div>
-                </div>
-                {% endfor %}
+                    {% endfor %}
+                {% else %}
+                    <p style="font-size: 0.8rem; color: #444;">No missions assigned yet.</p>
+                {% endif %}
             </div>
 
             <div class="card-box">
                 <h3 style="color: gold; margin-top: 0;">🏆 ACHIEVEMENTS</h3>
                 <div style="display: flex; gap: 15px; flex-wrap: wrap;">
                     <img src="https://cdn-icons-png.flaticon.com/512/6198/6198527.png" class="badge-icon unlocked" title="First Login">
-                    <img src="https://cdn-icons-png.flaticon.com/512/2111/2111421.png" class="badge-icon {% if user.level >= 5 %}unlocked{% endif %}" title="Level 5 Achieved">
-                    <img src="https://cdn-icons-png.flaticon.com/512/2583/2583344.png" class="badge-icon {% if user.level >= 10 %}unlocked{% endif %}" title="Elite Operator">
+                    <img src="https://cdn-icons-png.flaticon.com/512/2111/2111421.png" class="badge-icon {% if user.level|int >= 5 %}unlocked{% endif %}" title="Level 5 Achieved">
+                    <img src="https://cdn-icons-png.flaticon.com/512/2583/2583344.png" class="badge-icon {% if user.level|int >= 10 %}unlocked{% endif %}" title="Elite Operator">
                 </div>
             </div>
         </div>

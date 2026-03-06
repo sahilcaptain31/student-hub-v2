@@ -33,6 +33,10 @@ def home():
     leaders = list(db.users.find({}, {"_id": 0, "username": 1, "level": 1}).sort([("level", -1), ("xp", -1)]).limit(5))
     return render_template("index.html", leaders=leaders)
 
+# Default Avatar Links
+BOY_AVATAR = "https://raw.githubusercontent.com/Arunanshu/Student-Hub-Assets/main/boy_avatar.jpg"
+GIRL_AVATAR = "https://raw.githubusercontent.com/Arunanshu/Student-Hub-Assets/main/girl_avatar.jpg"
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
@@ -44,14 +48,17 @@ def register():
         MASTER_ADMIN_CODE = os.getenv("ADMIN_CODE") 
         role = 'admin' if MASTER_ADMIN_CODE and secret_input == MASTER_ADMIN_CODE else 'user'
         
+        avatar_url = BOY_AVATAR if gender == "male" else GIRL_AVATAR
+        
         if db.users.find_one({"username": u}):
             return "Username Already Exists!"
         
         # Initial Mission Data
+        # app.py register route snippet
         default_tasks = [
-            {"id": 1, "title": "First Login", "status": "completed", "xp": 10},
-            {"id": 2, "title": "Complete 1st Game", "status": "pending", "xp": 50},
-            {"id": 3, "title": "Reach Level 5", "status": "pending", "xp": 100}
+            {"id": 1, "title": "Neural Link Established", "status": "completed", "xp": 10},
+            {"id": 2, "title": "Complete First Mission", "status": "pending", "xp": 50},
+            {"id": 3, "title": "Reach Level 10", "status": "pending", "xp": 100}
         ]
         
         db.users.insert_one({
@@ -61,6 +68,7 @@ def register():
             "level": 1, 
             "xp": 0,
             "gender": gender,
+            "avatar": avatar_url,
             "tasks": default_tasks,
             "joined_at": datetime.utcnow()
         })
