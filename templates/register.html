@@ -35,7 +35,7 @@
         }
         .avatar-option img { 
             width: 80px; height: 90px; border-radius: 10px; 
-            object-fit: cover; /* Pastikan gambar mengisi kotak dengan benar terlepas dari aspek rasio */
+            object-fit: cover; 
             display: block; margin: 0 auto;
         }
         input[type="radio"] { display: none; }
@@ -51,6 +51,14 @@
             margin-bottom:15px; border-radius:8px; box-sizing: border-box; 
             font-family: 'Orbitron'; outline: none;
         }
+        
+        /* Hidden Admin Key Style */
+        #admin_key_field {
+            display: none; /* Default hidden */
+            border-color: var(--admin-red);
+            box-shadow: 0 0 10px rgba(255, 0, 60, 0.2);
+        }
+
         input:focus { border-color: var(--primary); background: rgba(0, 242, 255, 0.05); }
 
         .btn-register { 
@@ -67,10 +75,10 @@
         <h2 style="color:var(--primary); text-align: center; letter-spacing: 3px; margin-bottom: 5px;">NEW_IDENTITY</h2>
         <p style="color: #444; text-align: center; font-size: 0.7rem; margin-bottom: 20px;">SELECT_UNIT_TYPE_AND_CREDENTIALS</p>
         
-        <form method="POST">
+        <form method="POST" id="regForm">
             <div class="avatar-selection">
                 <label>
-                    <input type="radio" name="gender" value="male" checked>
+                    <input type="radio" name="gender" value="male" checked onclick="toggleAdminField(false)">
                     <div class="avatar-option">
                         <img src="{{ url_for('static', filename='images/boy.jpg') }}" alt="Boy">
                         <p style="font-size:0.5rem; color:#666; margin-top:8px;">BOY_UNIT</p>
@@ -78,7 +86,7 @@
                 </label>
 
                 <label>
-                    <input type="radio" name="gender" value="female">
+                    <input type="radio" name="gender" value="female" onclick="toggleAdminField(false)">
                     <div class="avatar-option">
                         <img src="{{ url_for('static', filename='images/girl.jpg') }}" alt="Girl">
                         <p style="font-size:0.5rem; color:#666; margin-top:8px;">ANGEL_UNIT</p>
@@ -86,7 +94,7 @@
                 </label>
 
                 <label>
-                    <input type="radio" name="gender" value="admin">
+                    <input type="radio" name="gender" value="admin" onclick="toggleAdminField(true)">
                     <div class="avatar-option">
                         <img src="{{ url_for('static', filename='images/admin.jpg') }}" alt="Admin">
                         <p style="font-size:0.5rem; color:var(--admin-red); margin-top:8px;">ADMIN_UNIT</p>
@@ -97,8 +105,26 @@
             <input type="text" name="username" placeholder="OPERATIVE_NAME" required>
             <input type="password" name="password" placeholder="ACCESS_KEY" required>
             
-            <button type="submit" class="btn-register">INITIALIZE_USER</button>
+            <input type="password" name="admin_secret" id="admin_key_field" placeholder="ADMIN_MASTER_KEY">
+            
+            <button type="submit" class="btn-register" id="submitBtn">INITIALIZE_USER</button>
         </form>
     </div>
+
+    <script>
+        function toggleAdminField(show) {
+            const adminField = document.getElementById('admin_key_field');
+            const submitBtn = document.getElementById('submitBtn');
+            if (show) {
+                adminField.style.display = 'block';
+                adminField.setAttribute('required', 'true');
+                submitBtn.style.background = '#ff003c'; // Admin color
+            } else {
+                adminField.style.display = 'none';
+                adminField.removeAttribute('required');
+                submitBtn.style.background = '#00f2ff'; // Normal color
+            }
+        }
+    </script>
 </body>
 </html>
