@@ -6,67 +6,22 @@
     <link rel="stylesheet" href="../static/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root { 
-            --neon-blue: #00f2ff; 
-            --neon-pink: #ff003c; 
-            --gold: #ffd700;
-            --glass: rgba(255, 255, 255, 0.03); 
-            --bg-dark: #02050a;
-        }
-        body { 
-            background: var(--bg-dark); 
-            color: white; 
-            font-family: 'Poppins', sans-serif;
-            margin: 0; 
-            background-image: radial-gradient(#1a1a1a 1px, transparent 1px);
-            background-size: 30px 30px;
-        }
-        .container { max-width: 1050px; margin: 50px auto; padding: 20px; }
-        h1, h2, h3, h4, .orbitron { font-family: 'Orbitron', sans-serif; letter-spacing: 1px; }
-
-        .header-box { 
-            display: flex; align-items: center; gap: 50px; 
-            background: rgba(0,0,0,0.6);
-            padding: 50px; border-radius: 24px; 
-            border: 1px solid rgba(0, 242, 255, 0.1);
-            position: relative; overflow: hidden;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-        }
-
-        .avatar-frame { 
-            width: 200px; height: 200px; 
-            border: 4px solid var(--neon-blue); 
-            border-radius: 50%; padding: 5px; 
-            box-shadow: 0 0 30px rgba(0, 242, 255, 0.3);
-            background: #000;
-            z-index: 1;
-            position: relative;
-        }
-        .avatar-frame img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-        
-        .rank-badge-overlay {
-            position: absolute; bottom: 10px; right: 10px;
-            background: var(--gold); color: black;
-            font-family: 'Orbitron', sans-serif; font-weight: bold; font-size: 0.7rem;
-            padding: 5px 10px; border-radius: 5px;
-            box-shadow: 0 0 10px rgba(255,215,0,0.5);
-        }
-
-        .user-info h1 { font-size: 3rem; margin: 0; text-transform: uppercase; letter-spacing: 6px; text-shadow: 0 0 10px white; }
-        .xp-bar-bg { width: 350px; height: 10px; background: rgba(255,255,255,0.05); border-radius: 5px; margin-top: 20px; }
-        .xp-bar-fill { height: 100%; background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink)); border-radius: 5px; }
-
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; margin-top: 40px; }
-        .stat-item { background: var(--glass); padding: 25px; border-radius: 18px; text-align: center; border: 1px solid rgba(255,255,255,0.02); }
-        .stat-item b { font-size: 2rem; display: block; }
-
-        .grid-2 { display: grid; grid-template-columns: 1.6fr 1fr; gap: 35px; margin-top: 40px; }
-        .card-box { background: rgba(0,0,0,0.4); padding: 30px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.03); }
-
-        .task-item { display: flex; justify-content: space-between; padding: 15px; background: rgba(255,255,255,0.02); margin-bottom: 10px; border-radius: 10px; }
-        .badges-container { display: flex; gap: 15px; justify-content: center; }
-        .badge-icon { width: 60px; height: 60px; opacity: 0.2; filter: grayscale(1); }
-        .badge-icon.unlocked { opacity: 1; filter: grayscale(0); }
+        :root { --neon-blue: #00f2ff; --neon-pink: #ff003c; --gold: #ffd700; --bg-dark: #02050a; }
+        body { background: var(--bg-dark); color: white; font-family: 'Poppins', sans-serif; margin: 0; background-image: radial-gradient(#1a1a1a 1px, transparent 1px); background-size: 30px 30px; }
+        .container { max-width: 1000px; margin: 40px auto; padding: 20px; }
+        .header-box { display: flex; align-items: center; gap: 40px; background: rgba(0,0,0,0.8); padding: 40px; border-radius: 24px; border: 1px solid rgba(0, 242, 255, 0.2); box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+        .avatar-frame { width: 180px; height: 180px; border: 3px solid var(--neon-blue); border-radius: 50%; padding: 8px; box-shadow: 0 0 25px rgba(0, 242, 255, 0.3); background: #000; position: relative; }
+        .avatar-frame img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; }
+        .rank-badge-overlay { position: absolute; bottom: 5px; right: 5px; background: var(--gold); color: black; font-family: 'Orbitron'; font-weight: bold; font-size: 0.7rem; padding: 4px 8px; border-radius: 5px; }
+        .user-info h1 { font-family: 'Orbitron'; font-size: 2.5rem; margin: 0; text-transform: uppercase; letter-spacing: 4px; color: white; }
+        .xp-bar-bg { width: 300px; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-top: 15px; overflow: hidden; }
+        .xp-bar-fill { height: 100%; background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink)); width: {{ user.xp|int }}%; box-shadow: 0 0 10px var(--neon-blue); }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 30px; }
+        .stat-item { background: rgba(255,255,255,0.03); padding: 20px; border-radius: 15px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
+        .stat-item b { font-family: 'Orbitron'; font-size: 1.8rem; display: block; color: var(--neon-blue); }
+        .grid-2 { display: grid; grid-template-columns: 1.5fr 1fr; gap: 30px; margin-top: 30px; }
+        .card-box { background: rgba(0,0,0,0.5); padding: 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); }
+        .back-btn { color: var(--neon-blue); text-decoration: none; font-family: 'Orbitron'; font-size: 0.8rem; display: block; text-align: center; margin-top: 30px; }
     </style>
 </head>
 <body>
@@ -74,53 +29,40 @@
         <div class="header-box">
             <div class="avatar-frame">
                 {% if user.gender == 'female' %}
-                    <img src="https://res.cloudinary.com/dts96sh9f/image/upload/v1/anime/purple_girl.jpg" 
-                         onerror="this.src='https://api.dicebear.com/7.x/adventurer/svg?seed=Angel';" alt="Angel">
+                    <img src="https://wallpapers-clan.com/wp-content/uploads/2023/10/anime-girl-purple-pfp-32.jpg" alt="Angel">
                 {% else %}
-                    <img src="https://res.cloudinary.com/dts96sh9f/image/upload/v1/anime/purple_boy.jpg" 
-                         onerror="this.src='https://api.dicebear.com/7.x/adventurer/svg?seed=Felix';" alt="Operative">
+                    <img src="https://wallpapers-clan.com/wp-content/uploads/2023/11/anime-boy-purple-hoodie-pfp-1.jpg" alt="Operative">
                 {% endif %}
                 <div class="rank-badge-overlay">LVL {{ user.level|int }}</div>
             </div>
             <div class="user-info">
-                <h1 class="orbitron">{{ user.username }}</h1>
-                <span class="orbitron" style="color: var(--neon-blue);">◈ STATUS: ACTIVE_OPERATIVE ◈</span>
-                <div class="xp-bar-bg">
-                    <div class="xp-bar-fill" style="width: {{ user.xp|int }}%;"></div>
-                </div>
+                <h1>{{ user.username }}</h1>
+                <p class="orbitron" style="color:var(--neon-blue); font-size:0.8rem; margin:5px 0;">◈ NEURAL_OPERATIVE_ACTIVE ◈</p>
+                <div class="xp-bar-bg"><div class="xp-bar-fill"></div></div>
+                <p style="font-size:0.6rem; color:#555; margin-top:5px;">XP_SYNC: {{ user.xp|int }}/100</p>
             </div>
         </div>
 
-        <div class="stats-grid poppins">
-            <div class="stat-item"><span>TOTAL_XP</span><b>{{ (user.level|int * 100) + user.xp|int }}</b></div>
+        <div class="stats-grid">
+            <div class="stat-item"><span>DATA_XP</span><b>{{ (user.level|int * 100) + user.xp|int }}</b></div>
             <div class="stat-item"><span>MISSIONS</span><b>{{ user.tasks|length if user.tasks else 0 }}</b></div>
             <div class="stat-item"><span>RANK</span><b>#{{ rank }}</b></div>
         </div>
 
-        <div class="grid-2 poppins">
+        <div class="grid-2">
             <div class="card-box">
-                <h3 class="orbitron" style="color: var(--neon-blue);">⚡ MISSIONS</h3>
-                {% if user.tasks %}
-                    {% for task in user.tasks %}
-                    <div class="task-item">
-                        <span>{{ task.title }}</span>
-                        <span style="color: var(--neon-blue);">+{{ task.xp }} XP</span>
-                    </div>
-                    {% endfor %}
-                {% else %}
-                    <p>No active missions.</p>
-                {% endif %}
+                <h3 class="orbitron" style="color:var(--neon-blue); font-size:1rem;">⚡ RECENT_MISSIONS</h3>
+                <p style="font-size:0.8rem; color:#666;">No recent logs found in terminal.</p>
             </div>
-
             <div class="card-box">
-                <h3 class="orbitron" style="color: var(--gold);">🏆 BADGES</h3>
-                <div class="badges-container">
-                    <img src="https://cdn-icons-png.flaticon.com/512/6198/6198527.png" class="badge-icon unlocked">
-                    <img src="https://cdn-icons-png.flaticon.com/512/6198/6198550.png" class="badge-icon {% if user.level|int >= 5 %}unlocked{% endif %}">
-                    <img src="https://cdn-icons-png.flaticon.com/512/6198/6198488.png" class="badge-icon {% if user.level|int >= 10 %}unlocked{% endif %}">
+                <h3 class="orbitron" style="color:var(--gold); font-size:1rem;">🏆 BADGES</h3>
+                <div style="display:flex; gap:10px; margin-top:15px;">
+                    <img src="https://cdn-icons-png.flaticon.com/512/6198/6198488.png" style="width:40px; filter:grayscale(1); opacity:0.3;">
+                    <img src="https://cdn-icons-png.flaticon.com/512/6198/6198527.png" style="width:40px;">
                 </div>
             </div>
         </div>
+        <a href="/" class="back-btn">[ RETURN_TO_DASHBOARD ]</a>
     </div>
 </body>
 </html>
