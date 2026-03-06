@@ -36,8 +36,9 @@ def home():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
-        u, p = request.form["username"], request.form["password"]
-        gender = request.form.get("gender", "male") # Radio button se value aayegi
+        u = request.form["username"]
+        p = request.form["password"]
+        gender = request.form.get("gender", "male")
         secret_input = request.form.get("admin_secret", "")
         
         MASTER_ADMIN_CODE = os.getenv("ADMIN_CODE") 
@@ -46,17 +47,27 @@ def register():
         if db.users.find_one({"username": u}):
             return "Username Already Exists!"
         
+        # Initial Mission Data
+        default_tasks = [
+            {"id": 1, "title": "First Login", "status": "completed", "xp": 10},
+            {"id": 2, "title": "Complete 1st Game", "status": "pending", "xp": 50},
+            {"id": 3, "title": "Reach Level 5", "status": "pending", "xp": 100}
+        ]
+        
         db.users.insert_one({
             "username": u, 
             "password": p, 
             "role": role, 
             "level": 1, 
             "xp": 0,
-            "gender": gender, # Gender field save ho gayi
+            "gender": gender,
+            "tasks": default_tasks,
             "joined_at": datetime.utcnow()
         })
         return redirect("/login")
     return render_template("register.html")
+
+
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -115,7 +126,11 @@ def schedule():
 def profile():
     if "user" not in session: return redirect("/login")
     user_data = db.users.find_one({"username": session["user"]})
-    return render_template("profile.html", user=user_data)
+    # Leaderboard rank nikalne ke liye
+    all_users = list(db.users.find().sort([("level", -1), ("xp", -1)]))
+    rank = next((i + 1 for i, u in enumerate(all_users) if u["username"] == session["user"]), "N/A")
+    
+    return render_template("profile.html", user=user_data, rank=rank)
 
 # --- PHASE 5: FORUM SYSTEM ---
 
