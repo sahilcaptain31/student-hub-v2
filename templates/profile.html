@@ -13,7 +13,6 @@
             --glass: rgba(255, 255, 255, 0.03); 
             --bg-dark: #02050a;
         }
-        
         body { 
             background: var(--bg-dark); 
             color: white; 
@@ -22,11 +21,9 @@
             background-image: radial-gradient(#1a1a1a 1px, transparent 1px);
             background-size: 30px 30px;
         }
-
         .container { max-width: 1050px; margin: 50px auto; padding: 20px; }
         h1, h2, h3, h4, .orbitron { font-family: 'Orbitron', sans-serif; letter-spacing: 1px; }
 
-        /* Profile Header */
         .header-box { 
             display: flex; align-items: center; gap: 50px; 
             background: rgba(0,0,0,0.6);
@@ -35,22 +32,17 @@
             position: relative; overflow: hidden;
             box-shadow: 0 10px 40px rgba(0,0,0,0.5);
         }
-        
-        .header-box::before {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(0,242,255,0.05) 0%, transparent 70%);
-            z-index: 0;
-        }
 
         .avatar-frame { 
             width: 200px; height: 200px; 
             border: 4px solid var(--neon-blue); 
-            border-radius: 50%; padding: 10px; 
+            border-radius: 50%; padding: 5px; 
             box-shadow: 0 0 30px rgba(0, 242, 255, 0.3);
             background: #000;
             z-index: 1;
             position: relative;
         }
+        .avatar-frame img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
         
         .rank-badge-overlay {
             position: absolute; bottom: 10px; right: 10px;
@@ -60,70 +52,21 @@
             box-shadow: 0 0 10px rgba(255,215,0,0.5);
         }
 
-        .avatar-frame img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-        
-        .user-info { z-index: 1; }
-        .user-info h1 { font-size: 3rem; margin: 0; text-transform: uppercase; letter-spacing: 6px; color: white; text-shadow: 0 0 10px white; }
-        .rank-tag { color: var(--neon-blue); font-size: 0.9rem; margin-top: 10px; display: block; font-weight: 300; }
+        .user-info h1 { font-size: 3rem; margin: 0; text-transform: uppercase; letter-spacing: 6px; text-shadow: 0 0 10px white; }
+        .xp-bar-bg { width: 350px; height: 10px; background: rgba(255,255,255,0.05); border-radius: 5px; margin-top: 20px; }
+        .xp-bar-fill { height: 100%; background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink)); border-radius: 5px; }
 
-        /* XP Bar */
-        .xp-bar-container { width: 350px; margin-top: 25px; }
-        .xp-bar-bg { width: 100%; height: 10px; background: rgba(255,255,255,0.05); border-radius: 5px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
-        .xp-bar-fill { height: 100%; background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink)); box-shadow: 0 0 15px var(--neon-blue); border-radius: 5px; transition: width 1s ease-out; }
-        .xp-text { font-size: 0.65rem; color: #666; margin-top: 8px; font-weight: 300; }
-
-        /* Stats Grid */
         .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; margin-top: 40px; }
-        .stat-item { 
-            background: var(--glass); padding: 25px; border-radius: 18px; 
-            text-align: center; border: 1px solid rgba(255,255,255,0.02);
-            transition: 0.3s;
-        }
-        .stat-item:hover { background: rgba(255,255,255,0.05); transform: translateY(-5px); border-color: rgba(0, 242, 255, 0.1); }
-        .stat-item span { font-size: 0.75rem; color: #888; display: block; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
-        .stat-item b { font-size: 2rem; color: white; font-family: 'Orbitron', sans-serif; text-shadow: 0 0 5px rgba(255,255,255,0.5); }
+        .stat-item { background: var(--glass); padding: 25px; border-radius: 18px; text-align: center; border: 1px solid rgba(255,255,255,0.02); }
+        .stat-item b { font-size: 2rem; display: block; }
 
-        /* Missions & Badges */
         .grid-2 { display: grid; grid-template-columns: 1.6fr 1fr; gap: 35px; margin-top: 40px; }
-        .card-box { 
-            background: rgba(0,0,0,0.4); padding: 30px; border-radius: 24px; 
-            border: 1px solid rgba(255,255,255,0.03);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-        }
-        
-        .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .card-header h3 { margin: 0; font-size: 1.1rem; }
+        .card-box { background: rgba(0,0,0,0.4); padding: 30px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.03); }
 
-        .task-item { 
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 18px; background: rgba(255,255,255,0.02);
-            margin-bottom: 12px; border-radius: 12px; 
-            border: 1px solid transparent;
-            transition: 0.2s;
-        }
-        .task-item.done { border-left: 3px solid #00ff00; background: rgba(0, 255, 0, 0.02); }
-        
-        .task-title { font-size: 0.95rem; font-weight: 400; color: #eee; }
-        .task-reward { font-size: 0.7rem; color: var(--neon-blue); margin-top: 3px; font-weight: 300; }
-        .task-status { font-size: 0.75rem; font-family: 'Orbitron', sans-serif; padding: 4px 8px; border-radius: 4px; }
-
-        .badges-container { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; margin-top: 10px; }
-        .badge-wrapper { text-align: center; width: 70px; }
-        .badge-icon { 
-            width: 70px; height: 70px; 
-            filter: grayscale(1) contrast(0.5); opacity: 0.15; 
-            transition: 0.4s; margin-bottom: 8px;
-        }
-        .badge-icon.unlocked { filter: grayscale(0) contrast(1); opacity: 1; box-shadow: 0 0 15px rgba(255, 215, 0, 0.1); }
-        .badge-name { font-size: 0.6rem; color: #777; font-weight: 300; display: block; line-height: 1.2; }
-
-        .back-btn { 
-            color: var(--neon-blue); text-decoration: none; 
-            font-size: 0.8rem; margin-top: 40px; display: inline-block; 
-            font-family: 'Orbitron', sans-serif;
-            transition: 0.2s; padding: 5px 0; border-bottom: 1px solid transparent;
-        }
-        .back-btn:hover { color: white; border-bottom-color: white; text-shadow: 0 0 5px white; }
+        .task-item { display: flex; justify-content: space-between; padding: 15px; background: rgba(255,255,255,0.02); margin-bottom: 10px; border-radius: 10px; }
+        .badges-container { display: flex; gap: 15px; justify-content: center; }
+        .badge-icon { width: 60px; height: 60px; opacity: 0.2; filter: grayscale(1); }
+        .badge-icon.unlocked { opacity: 1; filter: grayscale(0); }
     </style>
 </head>
 <body>
@@ -131,87 +74,52 @@
         <div class="header-box">
             <div class="avatar-frame">
                 {% if user.gender == 'female' %}
-                    <img src="https://wallpapers-clan.com/wp-content/uploads/2023/10/anime-girl-purple-pfp-32.jpg" alt="Angel">
+                    <img src="https://res.cloudinary.com/dts96sh9f/image/upload/v1/anime/purple_girl.jpg" 
+                         onerror="this.src='https://api.dicebear.com/7.x/adventurer/svg?seed=Angel';" alt="Angel">
                 {% else %}
-                    <img src="https://wallpapers-clan.com/wp-content/uploads/2023/11/anime-boy-purple-hoodie-pfp-1.jpg" alt="Operative">
+                    <img src="https://res.cloudinary.com/dts96sh9f/image/upload/v1/anime/purple_boy.jpg" 
+                         onerror="this.src='https://api.dicebear.com/7.x/adventurer/svg?seed=Felix';" alt="Operative">
                 {% endif %}
                 <div class="rank-badge-overlay">LVL {{ user.level|int }}</div>
             </div>
             <div class="user-info">
-                <h1>{{ user.username }}</h1>
-                <span class="rank-tag orbitron">◈ GLOBAL_RANK: #{{ rank }} ◈ STATUS: ACTIVE_OPERATIVE</span>
-                
-                <div class="xp-bar-container">
-                    <div class="xp-bar-bg">
-                        <div class="xp-bar-fill" style="width: {{ user.xp|int }}%;"></div>
-                    </div>
-                    <p class="xp-text poppins">NEURAL_SYNC: {{ user.xp|int }} / 100 XP TO NEXT_LEVEL</p>
+                <h1 class="orbitron">{{ user.username }}</h1>
+                <span class="orbitron" style="color: var(--neon-blue);">◈ STATUS: ACTIVE_OPERATIVE ◈</span>
+                <div class="xp-bar-bg">
+                    <div class="xp-bar-fill" style="width: {{ user.xp|int }}%;"></div>
                 </div>
             </div>
         </div>
 
         <div class="stats-grid poppins">
-            <div class="stat-item">
-                <span>TOTAL_DATA_SYNCED</span>
-                <b>{{ (user.level|int * 100) + user.xp|int }}<small style="font-size:1rem; color:#444;">XP</small></b>
-            </div>
-            <div class="stat-item">
-                <span>MISSIONS_ARCHIVED</span>
-                <b>{{ user.tasks|length if user.tasks else 0 }}</b>
-            </div>
-            <div class="stat-item">
-                <span>SYSTEM_REPUTATION</span>
-                <b>{{ user.level|int * 10 }}<small style="font-size:1rem; color:#444;">RP</small></b>
-            </div>
+            <div class="stat-item"><span>TOTAL_XP</span><b>{{ (user.level|int * 100) + user.xp|int }}</b></div>
+            <div class="stat-item"><span>MISSIONS</span><b>{{ user.tasks|length if user.tasks else 0 }}</b></div>
+            <div class="stat-item"><span>RANK</span><b>#{{ rank }}</b></div>
         </div>
 
         <div class="grid-2 poppins">
             <div class="card-box">
-                <div class="card-header orbitron">
-                    <h3 style="color: var(--neon-blue);">⚡ ACTIVE_MISSIONS</h3>
-                    <span style="font-size:0.7rem; color:#555;">{{ user.tasks|selectattr('status', 'equalto', 'pending')|list|length if user.tasks else 0 }} PENDING</span>
-                </div>
-                
+                <h3 class="orbitron" style="color: var(--neon-blue);">⚡ MISSIONS</h3>
                 {% if user.tasks %}
                     {% for task in user.tasks %}
-                    <div class="task-item {% if task.status == 'completed' %}done{% endif %}">
-                        <div>
-                            <div class="task-title">{{ task.title }}</div>
-                            <div class="task-reward orbitron">REWARD: +{{ task.xp }} XP</div>
-                        </div>
-                        <div class="task-status orbitron" style="color: {% if task.status == 'completed' %}#00ff00; background:rgba(0,255,0,0.1);{% else %}var(--neon-pink); background:rgba(255,0,60,0.1);{% endif %};">
-                            {{ task.status|upper }}
-                        </div>
+                    <div class="task-item">
+                        <span>{{ task.title }}</span>
+                        <span style="color: var(--neon-blue);">+{{ task.xp }} XP</span>
                     </div>
                     {% endfor %}
                 {% else %}
-                    <p style="text-align:center; color:#444; font-size:0.8rem;">No missions found.</p>
+                    <p>No active missions.</p>
                 {% endif %}
             </div>
 
             <div class="card-box">
-                <div class="card-header orbitron">
-                    <h3 style="color: var(--gold);">🏆 ACHIEVEMENTS</h3>
-                </div>
+                <h3 class="orbitron" style="color: var(--gold);">🏆 BADGES</h3>
                 <div class="badges-container">
-                    <div class="badge-wrapper">
-                        <img src="https://i.ibb.co/3rG5494/badge-1.png" class="badge-icon unlocked" title="Welcome">
-                        <span class="badge-name">LINKED</span>
-                    </div>
-                    <div class="badge-wrapper">
-                        <img src="https://i.ibb.co/cyM6p4p/badge-2.png" class="badge-icon {% if user.level|int >= 5 %}unlocked{% endif %}" title="Level 5">
-                        <span class="badge-name">CHAMP</span>
-                    </div>
-                    <div class="badge-wrapper">
-                        <img src="https://i.ibb.co/1qzV7fW/badge-3.png" class="badge-icon {% if user.level|int >= 10 %}unlocked{% endif %}" title="Level 10">
-                        <span class="badge-name">ELITE</span>
-                    </div>
+                    <img src="https://cdn-icons-png.flaticon.com/512/6198/6198527.png" class="badge-icon unlocked">
+                    <img src="https://cdn-icons-png.flaticon.com/512/6198/6198550.png" class="badge-icon {% if user.level|int >= 5 %}unlocked{% endif %}">
+                    <img src="https://cdn-icons-png.flaticon.com/512/6198/6198488.png" class="badge-icon {% if user.level|int >= 10 %}unlocked{% endif %}">
                 </div>
             </div>
-        </div>
-
-        <div style="text-align:center; margin-top: 50px;">
-            <a href="/" class="back-btn poppins">[ RETURN TO TERMINAL ]</a>
         </div>
     </div>
 </body>

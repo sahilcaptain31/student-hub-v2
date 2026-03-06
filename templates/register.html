@@ -12,71 +12,59 @@
             font-family: 'Orbitron', sans-serif; margin: 0;
         }
         .register-box { 
-            width: 400px; background: rgba(0, 0, 0, 0.9); 
+            width: 380px; background: rgba(0, 0, 0, 0.9); 
             padding: 30px; border-radius: 20px; 
             border: 1px solid rgba(0, 242, 255, 0.2);
             box-shadow: 0 0 30px rgba(0, 242, 255, 0.1);
         }
-        .avatar-selection { display: flex; gap: 20px; margin: 25px 0; justify-content: center; }
+        .avatar-selection { display: flex; gap: 20px; margin: 20px 0; justify-content: center; }
         .avatar-option { 
             cursor: pointer; border: 2px solid #222; border-radius: 15px; 
-            padding: 8px; transition: 0.4s; text-align: center; background: #111;
+            padding: 10px; transition: 0.3s; text-align: center; background: #111;
         }
         .avatar-option img { 
-            width: 100px; height: 120px; border-radius: 10px; 
-            object-fit: cover; border: 1px solid transparent;
+            width: 90px; height: 90px; border-radius: 50%; 
+            object-fit: cover; border: 2px solid transparent;
         }
-        .avatar-option p { font-size: 0.6rem; margin-top: 8px; color: #555; font-weight: bold; }
-        
         input[type="radio"] { display: none; }
         input[type="radio"]:checked + .avatar-option { 
             border-color: var(--primary); background: rgba(0, 242, 255, 0.1); 
-            box-shadow: 0 0 20px var(--primary); transform: translateY(-5px);
-        }
-        input[type="radio"]:checked + .avatar-option p { color: var(--primary); }
-
-        .input-group { width: 100%; margin-bottom: 15px; }
-        input[type="text"], input[type="password"] {
-            width: 100%; background: rgba(255,255,255,0.05); 
-            border: 1px solid #333; color: white; padding: 12px; border-radius: 5px;
-            font-family: 'Orbitron'; box-sizing: border-box;
+            box-shadow: 0 0 15px var(--primary); transform: scale(1.05);
         }
         .btn-register {
             width: 100%; padding: 15px; background: var(--primary); color: black; 
             border: none; font-family: 'Orbitron'; font-weight: bold; cursor: pointer;
-            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
+            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%); margin-top: 15px;
+        }
+        input {
+            width: 100%; background: rgba(255,255,255,0.05); border: 1px solid #333; 
+            color: white; padding: 12px; margin-bottom: 10px; border-radius: 5px; box-sizing: border-box;
         }
     </style>
 </head>
 <body>
     <div class="register-box">
-        <h2 style="color:var(--primary); text-align: center; letter-spacing: 3px;">CREATE_ID</h2>
-        <p style="font-size: 0.6rem; color: #666; text-align: center;">SELECT YOUR NEURAL AVATAR</p>
-        
+        <h2 style="color:var(--primary); text-align: center; letter-spacing: 3px;">INITIALIZE_USER</h2>
         <form method="POST">
             <div class="avatar-selection">
                 <label>
                     <input type="radio" name="gender" value="male" checked>
                     <div class="avatar-option">
-                        <img src="https://wallpapers-clan.com/wp-content/uploads/2023/11/anime-boy-purple-hoodie-pfp-1.jpg" alt="Boy">
-                        <p>BOY_UNIT</p>
+                        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Felix&backgroundColor=b6e3f4" alt="Boy">
+                        <p style="font-size: 0.6rem; color: #666; margin-top: 5px;">BOY_UNIT</p>
                     </div>
                 </label>
-                
                 <label>
                     <input type="radio" name="gender" value="female">
                     <div class="avatar-option">
-                        <img src="https://wallpapers-clan.com/wp-content/uploads/2023/10/anime-girl-purple-pfp-32.jpg" alt="Girl">
-                        <p>ANGEL_UNIT</p>
+                        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Angel&backgroundColor=ffdfbf" alt="Girl">
+                        <p style="font-size: 0.6rem; color: #666; margin-top: 5px;">GIRL_UNIT</p>
                     </div>
                 </label>
             </div>
-
-            <div class="input-group"><input type="text" name="username" placeholder="USERNAME" required></div>
-            <div class="input-group"><input type="password" name="password" placeholder="PASSWORD" required></div>
-            <div class="input-group"><input type="password" name="admin_secret" placeholder="ADMIN_CODE (OPTIONAL)"></div>
-            
-            <button type="submit" class="btn-register">REGISTER_OPERATIVE</button>
+            <input type="text" name="username" placeholder="OPERATIVE_NAME" required>
+            <input type="password" name="password" placeholder="ACCESS_KEY" required>
+            <button type="submit" class="btn-register">CREATE_IDENTITY</button>
         </form>
     </div>
 </body>
