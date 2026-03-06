@@ -78,11 +78,15 @@ def logout():
 def update_xp():
     if "user" in session:
         data = request.json
+        # Database mein level aur xp update ho raha hai
         db.users.update_one(
             {"username": session["user"]}, 
-            {"$set": {"level": data['level'], "xp": data['xp']}}
+            {"$set": {
+                "level": int(data.get('level', 1)), 
+                "xp": int(data.get('xp', 0))
+            }}
         )
-        return jsonify({"status": "ok"})
+        return jsonify({"status": "synced", "level": data.get('level')})
     return jsonify({"status": "error", "message": "Unauthorized"}), 401
 
 # --- CONTENT ROUTES ---
