@@ -76,7 +76,7 @@
                 <span>LVL <span id="lvl">{{ user_level if user_level else '1' }}</span></span>
             </div>
             <div style="width: 100%; height: 10px; background: rgba(255,255,255,0.1); border-radius: 5px; overflow: hidden;">
-                <div id="xpFill" style="width: 10%; height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); transition: 0.5s;"></div>
+                <div id="xpFill" style="width: {{ user_xp if user_xp else '10' }}%; height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); transition: 0.5s;"></div>
             </div>
         </div>
 
@@ -93,17 +93,26 @@
         <h3 style="font-family: 'Orbitron'; color: white; margin-top: 40px; font-size: 0.9rem; opacity: 0.6;">> SYSTEM_MODULES:</h3>
         
         <div class="features-grid">
-            <div class="card" onclick="location.href='/notes'"><span class="xp-tag">+15 XP</span><h3>📚 Study Vault</h3><p>Access notes repository.</p></div>
-            <div class="card" onclick="location.href='/pyq'"><span class="xp-tag">+20 XP</span><h3>⚡ PYQ Archive</h3><p>Past paper database.</p></div>
-            <div class="card" onclick="location.href='/forum'"><span class="xp-tag">+10 XP</span><h3>💬 Global Forum</h3><p>Community doubt lines.</p></div>
-            <div class="card" onclick="location.href='/bunk-meter'" style="border-color: var(--danger);"><h3 style="color: var(--danger);">📉 Bunk Meter</h3><p>Attendance mission tracker.</p></div>
+            <div class="card" onclick="location.href='/notes'"><span class="xp-tag">+15 XP</span><h3>📚 Study Vault</h3><p>Access encrypted notes & PDF repository.</p></div>
+            <div class="card" onclick="location.href='/pyq'"><span class="xp-tag">+20 XP</span><h3>⚡ PYQ Archive</h3><p>Previous year papers database.</p></div>
+            <div class="card" onclick="location.href='/predictor'"><span class="xp-tag">+50 XP</span><h3>📊 Rank Predictor</h3><p>Neural rank estimation algorithm.</p></div>
+            <div class="card" onclick="location.href='/forum'"><span class="xp-tag">+10 XP</span><h3>💬 Global Forum</h3><p>Community communication lines.</p></div>
+            <div class="card" onclick="location.href='/schedule'"><span class="xp-tag">+15 XP</span><h3>🎯 Mission Tracker</h3><p>Daily goals & schedule management.</p></div>
+            <div class="card" onclick="location.href='/tools'"><span class="xp-tag">+5 XP</span><h3>🛠️ System Tools</h3><p>Productivity utilities & calculators.</p></div>
+            
+            <div class="card" onclick="location.href='/bunk-meter'" style="border-color: var(--danger);">
+                <span class="xp-tag" style="color: var(--danger);">UTILITY</span>
+                <h3 style="color: var(--danger);">📉 Bunk Meter</h3>
+                <p>Calculate safe bunks & maintain your 75% mission.</p>
+            </div>
 
             {% if session['role'] == 'admin' %}
             <div class="card" onclick="location.href='/admin'" style="border: 2px dashed var(--danger); background: rgba(255,0,60,0.05);">
-                <h3 style="color: var(--danger);">📤 Admin Panel</h3><p>Manage system resources.</p>
+                <span class="xp-tag" style="color:var(--danger)">ROOT</span>
+                <h3 style="color: var(--danger);">📤 Admin Panel</h3><p>Add or modify system resources.</p>
             </div>
             {% else %}
-            <div class="card" onclick="location.href='/profile'"><h3>👤 My Profile</h3><p>View personal stats.</p></div>
+            <div class="card" onclick="location.href='/profile'"><h3>👤 My Profile</h3><p>View stats, badges & personal rank.</p></div>
             {% endif %}
         </div>
 
@@ -130,7 +139,6 @@
 
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script>
-        // --- GAME MODE TOGGLE ---
         function toggleGameMode() {
             const gameBox = document.getElementById('gameModule');
             const btn = document.getElementById('gameToggleBtn');
@@ -141,7 +149,6 @@
 
         particlesJS('particles-js', { particles: { number: { value: 40 }, color: { value: "#00f2ff" }, opacity: { value: 0.2 } } });
 
-        // --- GAME LOGIC ---
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         let gameActive = false, score = 0, p = { x: 185, y: 370, w: 30, h: 20 }, bullets = [], enemies = [];
@@ -170,7 +177,6 @@
                 if(en.y > p.y && en.x > p.x && en.x < p.x + p.w) {
                     gameActive = false;
                     document.getElementById('gStatus').innerText = "DESTROYED";
-                    document.getElementById('gStatus').style.color = "#ff003c";
                     handleGameOver(score);
                 }
                 bullets.forEach((b, bi) => {
@@ -189,34 +195,29 @@
         });
         canvas.addEventListener('click', () => { if(gameActive) bullets.push({x: p.x + 13, y: p.y}); });
 
-        // --- POINT 4 & 2: XP PERSISTENCE & SYNC ---
-        let userXP = 0; 
-        let userLVL = parseInt(document.getElementById('lvl').innerText) || 1;
+        // --- XP PERSISTENCE LOGIC ---
+        let currentXP = {{ user_xp if user_xp else 0 }};
+        let currentLVL = {{ user_level if user_level else 1 }};
 
         function handleGameOver(finalScore) {
             if(finalScore <= 0) return;
-            
-            // Har 10 score = 5 XP
             let gainedXP = Math.floor(finalScore / 2);
-            userXP += gainedXP;
+            currentXP += gainedXP;
 
-            if(userXP >= 100) {
-                userLVL++;
-                userXP = userXP - 100;
-                document.getElementById('lvl').innerText = userLVL;
-                alert("⚡ NEURAL UPGRADE: Level " + userLVL);
+            if(currentXP >= 100) {
+                currentLVL++;
+                currentXP = currentXP - 100;
+                document.getElementById('lvl').innerText = currentLVL;
+                alert("⚡ LEVEL UP: " + currentLVL);
             }
+            document.getElementById('xpFill').style.width = currentXP + "%";
             
-            document.getElementById('xpFill').style.width = userXP + "%";
-            syncXP(userXP, userLVL);
-        }
-
-        function syncXP(xp, lvl) {
+            // Sync with Server
             fetch('/update_xp', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ xp: xp, level: lvl })
-            }).then(res => res.json()).then(data => console.log("Cloud Sync: OK"));
+                body: JSON.stringify({ xp: currentXP, level: currentLVL })
+            });
         }
     </script>
     <script src="https://pl28843487.effectivegatecpm.com/8b/e5/ec/8be5ec537213869fea89bb6105a88ae1.js"></script>
