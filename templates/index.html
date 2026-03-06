@@ -8,7 +8,7 @@
     <style>
         :root { 
             --primary: #00f2ff; --secondary: #7000ff; --danger: #ff003c; 
-            --bg: #05080a; --glass: rgba(255, 255, 255, 0.05); 
+            --success: #00ff88; --bg: #05080a; --glass: rgba(255, 255, 255, 0.05); 
         }
 
         * { box-sizing: border-box; transition: 0.3s ease; }
@@ -56,7 +56,18 @@
         
         .admin-card { border: 2px dashed var(--danger) !important; background: rgba(255, 0, 60, 0.05); }
 
-        /* --- Gaming HUD (Mobile & Desktop Friendly) --- */
+        /* --- Task Section --- */
+        .task-container { 
+            background: rgba(255, 255, 255, 0.02); border: 1px solid var(--glass); 
+            padding: 20px; border-radius: 15px; margin-top: 30px;
+        }
+        .task-item { 
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .task-item.completed span { text-decoration: line-through; opacity: 0.5; }
+
+        /* --- Gaming HUD --- */
         .hud-layout { display: flex; height: 100vh; padding: 15px; gap: 15px; }
         .side-hud { width: 250px; border: 1px solid rgba(0, 242, 255, 0.2); background: rgba(0,242,255,0.02); padding: 20px; display: flex; flex-direction: column; justify-content: space-between; }
         .center-game { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
@@ -69,12 +80,6 @@
             padding: 12px 24px; font-family: 'Orbitron'; font-size: 0.7rem; cursor: pointer;
             clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
         }
-
-        /* --- Leaderboard --- */
-        .leaderboard { margin-top: 40px; background: rgba(0,0,0,0.5); border: 1px solid gold; border-radius: 15px; padding: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th { text-align: left; color: gold; font-family: 'Orbitron'; font-size: 0.7rem; padding: 10px; border-bottom: 1px solid gold; }
-        td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.8rem; }
 
         @media (max-width: 850px) {
             .hud-layout { flex-direction: column; overflow-y: auto; }
@@ -89,7 +94,7 @@
         <a href="/" class="logo">STUDENT_HUB_OS</a>
         <div class="nav-links">
             {% if session['user'] %}
-                <span style="color: var(--primary); font-size: 0.8rem; margin-right: 15px;">{{ session['user']|upper }}</span>
+                <a href="/profile" style="color: var(--primary); text-decoration: none; font-size: 0.8rem; margin-right: 15px;">[ MY_PROFILE ]</a>
                 <a href="/logout" style="color: var(--danger); text-decoration: none; border: 1px solid var(--danger); padding: 5px 10px; font-size: 0.7rem;">TERMINATE</a>
             {% else %}
                 <a href="/login" style="color: var(--primary); text-decoration: none; margin-right: 15px; font-size: 0.8rem;">LOGIN</a>
@@ -102,7 +107,7 @@
         {% if not session['user'] %}
             <div class="hero-guest">
                 <h1 style="font-family: 'Orbitron'; font-size: 2.5rem; margin: 0;">SYSTEM_LOCKED</h1>
-                <p style="opacity: 0.6; margin: 20px 0;">Authentication required to access Study Modules and Gaming HUD.</p>
+                <p style="opacity: 0.6; margin: 20px 0;">Authentication required to access Study Modules, Profile and Gaming HUD.</p>
                 <div style="display: flex; justify-content: center; gap: 15px;">
                     <button onclick="location.href='/login'" style="background: transparent; border: 1px solid var(--primary); color: var(--primary); padding: 12px 30px; font-family: 'Orbitron'; cursor: pointer;">LOGIN</button>
                     <button onclick="location.href='/register'" style="background: var(--primary); color: #000; border: none; padding: 12px 30px; font-family: 'Orbitron'; font-weight: bold; cursor: pointer;">SIGN_UP</button>
@@ -119,21 +124,34 @@
                 </div>
 
                 <div class="grid">
-                    <div class="card" onclick="location.href='/notes'"><span class="xp-tag">+15 XP</span><h3>📚 Study Vault</h3><p>Syllabus & PDF notes.</p></div>
+                    <div class="card" onclick="location.href='/notes'"><span class="xp-tag">+15 XP</span><h3>📚 Study Vault</h3><p>Access notes & PDFs.</p></div>
                     <div class="card" onclick="location.href='/pyq'"><span class="xp-tag">+20 XP</span><h3>⚡ PYQ Archive</h3><p>Previous year papers.</p></div>
+                    <div class="card" onclick="location.href='/tools'"><h3 style="color:var(--success)">🛠️ System Tools</h3><p>Calculators & Neural GPT.</p></div>
+                    <div class="card" onclick="location.href='/profile'"><h3>👤 My Profile</h3><p>View stats & badges.</p></div>
+                    <div class="card" onclick="location.href='/bunk-meter'"><h3 style="color:var(--danger)">📉 Bunk Meter</h3><p>Attendance tracker.</p></div>
                     <div class="card" onclick="location.href='/predictor'"><span class="xp-tag">+50 XP</span><h3>📊 Rank Predictor</h3><p>Neural rank analysis.</p></div>
-                    <div class="card" onclick="location.href='/forum'"><span class="xp-tag">+10 XP</span><h3>💬 Global Forum</h3><p>Discuss with community.</p></div>
-                    <div class="card" onclick="location.href='/bunk-meter'"><h3 style="color:var(--danger)">📉 Bunk Meter</h3><p>Attendance calculator.</p></div>
                     
                     {% if session['role'] == 'admin' %}
                     <div class="card admin-card" onclick="location.href='/admin'">
                         <h3 style="color:var(--danger)">📤 Admin Control</h3>
-                        <p>Manage system resources & users.</p>
+                        <p>Manage resources & users.</p>
                     </div>
                     {% endif %}
                 </div>
 
-                <div class="leaderboard">
+                <div class="task-container">
+                    <h3 style="font-family: 'Orbitron'; color: var(--primary); font-size: 0.9rem;">📋 NEURAL_TASKS (Task XP)</h3>
+                    <div id="taskList">
+                        <div class="task-item"><span>Read Physics Chapter 1</span> <button onclick="this.parentElement.classList.toggle('completed')" style="background:var(--success); border:none; cursor:pointer; font-size:0.6rem;">DONE</button></div>
+                        <div class="task-item"><span>Solve 10 Math PYQs</span> <button onclick="this.parentElement.classList.toggle('completed')" style="background:var(--success); border:none; cursor:pointer; font-size:0.6rem;">DONE</button></div>
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-top: 15px;">
+                        <input type="text" id="newTask" placeholder="Add custom task..." style="flex-grow:1; background:#000; border:1px solid var(--glass); color:white; padding:10px;">
+                        <button onclick="addNewTask()" style="background:var(--primary); color:black; border:none; padding:10px 20px; font-weight:bold; cursor:pointer;">ADD</button>
+                    </div>
+                </div>
+
+                <div class="leaderboard" style="margin-top: 40px; background: rgba(0,0,0,0.5); border: 1px solid gold; border-radius: 15px; padding: 20px;">
                     <h3 style="margin: 0; font-family: 'Orbitron'; color: gold; font-size: 0.9rem;">🏆 TOP_OPERATIVES</h3>
                     <table>
                         <thead><tr><th>RANK</th><th>NAME</th><th>LEVEL</th></tr></thead>
@@ -153,24 +171,17 @@
             <div class="side-hud">
                 <div>
                     <h4 style="font-family:'Orbitron'; color:var(--primary); font-size:0.7rem;">OS_INFO</h4>
-                    <p style="font-size:0.6rem; opacity:0.6;">USER: {{ session['user']|upper }}</p>
+                    <p style="font-size:0.6rem; opacity:0.6;">USER: {{ session['user']|upper if session['user'] else 'GUEST' }}</p>
                     <p style="font-size:0.6rem; opacity:0.6;">SYNC: <span id="hud-xp-sync">{{ user_xp }}</span>%</p>
                 </div>
-                <div style="font-size:0.5rem; color:var(--primary);">>> RADAR_LOCKED<br>>> TARGET_ACQUIRED</div>
             </div>
-            
             <div class="center-game">
                 <h2 style="font-family:'Press Start 2P'; font-size:0.6rem; color:var(--primary); margin-bottom:20px;">NEURAL_EXTERMINATOR</h2>
                 <canvas id="gameCanvas" width="350" height="400"></canvas>
                 <div style="margin-top:15px; font-family:'Orbitron'; font-size:0.8rem;">SCORE: <span id="gScore">0</span> | <span id="gStatus" style="color:var(--danger)">READY</span></div>
                 <button onclick="startGame()" style="margin-top:15px; padding:10px 30px; background:transparent; border:1px solid var(--primary); color:var(--primary); font-family:'Orbitron'; cursor:pointer;">START_MISSION</button>
             </div>
-
             <div class="side-hud">
-                <div style="width:100%; height:120px; border:1px solid var(--primary); position:relative; overflow:hidden;">
-                    <div style="position:absolute; top:50%; left:50%; width:100%; height:1px; background:rgba(0,242,255,0.2);"></div>
-                    <div id="radar-dot" style="position:absolute; top:20%; left:30%; width:4px; height:4px; background:red; border-radius:50%; box-shadow:0 0 10px red;"></div>
-                </div>
                 <button onclick="toggleGameMode()" style="background:var(--danger); border:none; color:black; padding:10px; font-family:'Orbitron'; font-weight:bold; cursor:pointer;">ABORT</button>
             </div>
         </div>
@@ -188,14 +199,23 @@
             const gaming = document.getElementById('gamingDashboard');
             const btn = document.getElementById('toggleBtn');
             const isGuest = gaming.style.display === 'none' || gaming.style.display === '';
-
             normal.style.display = isGuest ? 'none' : 'block';
             gaming.style.display = isGuest ? 'block' : 'none';
             btn.innerText = isGuest ? "🎮 SYSTEM: GAMING" : "🕹️ MODE: NORMAL";
             document.body.style.overflow = isGuest ? 'hidden' : 'auto';
         }
 
-        // --- Optimized Game Engine ---
+        function addNewTask() {
+            const val = document.getElementById('newTask').value;
+            if(!val) return;
+            const list = document.getElementById('taskList');
+            const item = document.createElement('div');
+            item.className = "task-item";
+            item.innerHTML = `<span>${val}</span> <button onclick="this.parentElement.classList.toggle('completed')" style="background:var(--success); border:none; cursor:pointer; font-size:0.6rem;">DONE</button>`;
+            list.appendChild(item);
+            document.getElementById('newTask').value = "";
+        }
+
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         let gameActive = false, score = 0, p = { x: 160, y: 360, w: 30, h: 20 }, bullets = [], enemies = [];
@@ -211,29 +231,19 @@
         function update() {
             if(!gameActive) return;
             ctx.clearRect(0,0,350,400);
-            
-            // Player
             ctx.fillStyle = "#00f2ff"; ctx.fillRect(p.x, p.y, p.w, p.h);
-
-            // Bullets
             bullets.forEach((b, i) => {
                 b.y -= 8; ctx.fillStyle = "#ff003c"; ctx.fillRect(b.x, b.y, 3, 10);
                 if(b.y < 0) bullets.splice(i, 1);
             });
-
-            // Enemies
             if(Math.random() < 0.05) enemies.push({x: Math.random()*320, y: 0});
             enemies.forEach((en, i) => {
                 en.y += 3.5; ctx.fillStyle = "#7000ff"; ctx.fillRect(en.x, en.y, 22, 22);
-                
-                // Collision
                 if(en.y > p.y && en.x > p.x && en.x < p.x + p.w) {
                     gameActive = false;
                     document.getElementById('gStatus').innerText = "FAILED";
-                    document.getElementById('gStatus').style.color = "var(--danger)";
                     syncXP(score);
                 }
-
                 bullets.forEach((b, bi) => {
                     if(b.x > en.x && b.x < en.x+22 && b.y < en.y+22) {
                         enemies.splice(i, 1); bullets.splice(bi, 1);
@@ -244,13 +254,11 @@
             requestAnimationFrame(update);
         }
 
-        // Mouse/Touch Controls
         const movePlayer = (e) => {
             const rect = canvas.getBoundingClientRect();
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             p.x = clientX - rect.left - 15;
-            if(p.x < 0) p.x = 0;
-            if(p.x > 320) p.x = 320;
+            if(p.x < 0) p.x = 0; if(p.x > 320) p.x = 320;
         };
         canvas.addEventListener('mousemove', movePlayer);
         canvas.addEventListener('touchmove', movePlayer);
@@ -262,9 +270,10 @@
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({xp_gained: xpGained})
-            }).then(() => location.reload()); // Reload to sync stats
+            }).then(() => location.reload());
         }
     </script>
+
     <script src="https://pl28843487.effectivegatecpm.com/8b/e5/ec/8be5ec537213869fea89bb6105a88ae1.js"></script>
     <script async="async" data-cfasync="false" src="https://pl28843537.effectivegatecpm.com/7a6e40ba8fe390650b386a0fcd9ea143/invoke.js"></script>
     <div id="container-7a6e40ba8fe390650b386a0fcd9ea143"></div>
