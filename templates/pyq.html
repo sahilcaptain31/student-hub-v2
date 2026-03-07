@@ -1,31 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../static/css/style.css">
-    <title>PYQ Archive | Pro</title>
+    <title>PYQ Archive | Student Hub V2 Pro</title>
 </head>
 <body>
     <nav class="navbar">
         <a href="/" class="logo">HUB.OS</a>
         <div class="nav-links">
             <a href="/">Dashboard</a>
-            <span id="navLvl" style="background:var(--secondary); padding:2px 8px; border-radius:5px; font-size:0.7rem;">LVL 1</span>
+            <span id="navLvl" style="background:var(--secondary); padding:2px 8px; border-radius:5px; font-size:0.7rem; color:#000; font-weight:bold;">LVL 1</span>
         </div>
     </nav>
 
     <div style="max-width: 1000px; margin: 0 auto; padding: 40px 20px;">
-        <h1 style="font-family:'Orbitron'; color:var(--secondary); text-align:center;">PYQ_<span>ARCHIVE</span></h1>
+        <h1 style="font-family:'Orbitron'; color:var(--secondary); text-align:center; text-transform:uppercase;">PYQ_<span>ARCHIVE_2023</span></h1>
+        <p style="text-align:center; opacity:0.7; font-size:0.9rem; margin-bottom:20px;">Official Board Papers & Topper Notes - Latest 2026 Pattern</p>
         
-        <div class="grid" style="grid-template-columns: repeat(2, 1fr); margin-top:30px;">
+        <div class="grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top:30px;">
             {% for item in items %}
-            <div class="card" style="text-align:left; border-color:var(--secondary);">
-                <h3>{{ item['subject'] }}</h3>
-                <p style="font-size:0.7rem; opacity:0.5; margin-bottom:15px;">Previous Year Paper</p>
+            <div class="card" style="text-align:left; border: 1px solid var(--secondary); background: rgba(0,0,0,0.3); padding: 20px; border-radius: 10px; transition: 0.3s; position: relative; overflow: hidden;">
+                <h3 style="margin-bottom:5px; color:#fff;">{{ item['subject'] }}</h3>
+                <p style="font-size:0.7rem; opacity:0.6; margin-bottom:15px; color:var(--secondary);">Premium Study Material (Verified)</p>
                 
-                <button onclick="viewFile('{{ item['url'] }}')" class="btn-premium" style="width:100%; background:var(--secondary);">OPEN PAPER</button>
+                <button onclick="handleDownload('{{ item['url'] }}')" class="btn-premium" style="width:100%; background:var(--secondary); border:none; padding:12px; border-radius:5px; cursor:pointer; font-weight:bold; color:#000; text-transform:uppercase;">
+                    DOWNLOAD (+10 XP)
+                </button>
                 
                 {% if session['role'] == 'admin' %}
-                    <a href="/delete/pyq/{{ item['_id'] }}" style="color:red; font-size:0.6rem; display:block; margin-top:10px;">[DELETE]</a>
+                    <a href="/delete/pyq/{{ item['_id'] }}" style="color:#ff4444; font-size:0.6rem; display:block; margin-top:15px; text-decoration:none; text-align:right;">[ADMIN: DELETE]</a>
                 {% endif %}
             </div>
             {% endfor %}
@@ -33,22 +38,39 @@
     </div>
 
     <script>
+        // Game Engine: XP and Level System
         let xp = parseInt(localStorage.getItem('hXP')) || 0;
         let lvl = parseInt(localStorage.getItem('hLVL')) || 1;
         document.getElementById('navLvl').innerText = "LVL " + lvl;
 
-        function viewFile(url) {
+        // Tera Smart Link (Adsterra)
+        const SMART_LINK = "https://www.effectivegatecpm.com/wu8rn0xa?key=b85ba7da0189c934b5b86b55ab2582b6";
+
+        function handleDownload(fileUrl) {
+            // 1. XP Update Logic
             xp += 10; 
-            if(xp >= lvl*100) { xp=0; lvl++; alert("LEVEL UP! 🚀"); }
+            if(xp >= lvl * 100) { 
+                xp = 0; 
+                lvl++; 
+                alert("🚀 LEVEL UP! You reached Level " + lvl + ". Keep downloading to earn more rewards!"); 
+            }
             localStorage.setItem('hXP', xp);
             localStorage.setItem('hLVL', lvl);
+            document.getElementById('navLvl').innerText = "LVL " + lvl;
             
-            // BADLAV: Ab ye direct Google Drive ya external link kholega bina 404 error ke
-            if(url) {
-                window.open(url, '_blank');
-            } else {
-                alert("Link not found! Please check admin panel.");
-            }
+            // 2. Revenue Generation (Adsterra Smart Link)
+            // Ye ek naye tab mein ad khol dega
+            window.open(SMART_LINK, '_blank');
+
+            // 3. Actual File Download
+            // 1.5 second ka delay taki ad sahi se load ho jaye aur tera revenue pakka ho jaye
+            setTimeout(() => {
+                if(fileUrl) {
+                    window.location.href = fileUrl; 
+                } else {
+                    alert("System Update: Link will be available shortly.");
+                }
+            }, 1500);
         }
     </script>
 </body>

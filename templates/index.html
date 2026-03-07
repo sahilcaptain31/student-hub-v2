@@ -35,7 +35,7 @@
             padding: 20px; border: 1px solid var(--primary); border-radius: 12px; margin-bottom: 30px;
         }
         .xp-bar-bg { width: 100%; height: 12px; background: #111; border-radius: 6px; overflow: hidden; margin-top: 10px; border: 1px solid rgba(0,242,255,0.2); }
-        .xp-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); box-shadow: 0 0 15px var(--primary); }
+        .xp-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); box-shadow: 0 0 15px var(--primary); transition: width 1s ease-in-out; }
 
         /* --- Modern Grid --- */
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; }
@@ -106,27 +106,31 @@
                 <div class="xp-card">
                     <div style="display: flex; justify-content: space-between; font-family: 'Orbitron'; font-size: 0.65rem; color: var(--primary);">
                         <span>OPERATIVE: {{ session['user']|upper }}</span>
-                        <span>LEVEL: {{ user_level if user_level else '1' }}</span>
+                        <span>LEVEL: {{ user.level }}</span>
                     </div>
-                    <div class="xp-bar-bg"><div class="xp-fill" style="width: {{ user_xp if user_xp else '10' }}%;"></div></div>
+                    <div class="xp-bar-bg">
+                        <div id="xpBarFill" class="xp-fill" style="width: {{ (user.xp / (user.level * 100)) * 100 }}%;"></div>
+                    </div>
+                    <p style="font-size: 0.6rem; margin-top: 5px; opacity: 0.6;">XP: {{ user.xp }} / {{ user.level * 100 }}</p>
                 </div>
 
+                {% if session['role'] == 'admin' %}
+                <div style="margin-bottom: 20px;">
+                    <button onclick="location.href='/admin'" style="width: 100%; padding: 10px; background: none; border: 1px dashed var(--danger); color: var(--danger); font-family: 'Orbitron'; cursor: pointer;">
+                        >> ACCESS_ROOT_CONSOLE (ADMIN_ONLY)
+                    </button>
+                </div>
+                {% endif %}
+
                 <div class="grid">
-                    <div class="card" onclick="location.href='/notes'"><span class="xp-tag">+15 XP</span><h3>📚 Study Vault </h3><p>Access neural study vault and PDF modules.</p></div>
-                    <div class="card" onclick="location.href='/pyq'"><span class="xp-tag">+20 XP</span><h3>⚡ PYQ Achive</h3><p>Retrieve previous year combat papers.</p></div>
-                    <div class="card" onclick="location.href='/predictor'"><span class="xp-tag">+50 XP</span><h3>📊 Rank Predictor</h3><p>Analyze rank through neural prediction.</p></div>
+                    <div class="card" onclick="handleCardClick('/notes', 15)"><span class="xp-tag">+15 XP</span><h3>📚 Study Vault </h3><p>Access neural study vault and PDF modules.</p></div>
+                    <div class="card" onclick="handleCardClick('/pyq', 20)"><span class="xp-tag">+20 XP</span><h3>⚡ PYQ Achive</h3><p>Retrieve previous year combat papers.</p></div>
+                    <div class="card" onclick="handleCardClick('/predictor', 50)"><span class="xp-tag">+50 XP</span><h3>📊 Rank Predictor</h3><p>Analyze rank through neural prediction.</p></div>
                     <div class="card" onclick="location.href='/forum'"><span class="xp-tag">+10 XP</span><h3>💬 Global Forum</h3><p>Global encrypted discussion board.</p></div>
                     <div class="card" onclick="location.href='/tools'"><h3 style="color:var(--gold)">🛠️ System Tools</h3><p>Calculators, Task Manager & System Gear.</p></div>
                     <div class="card" onclick="location.href='/schedule'"><h3 style="color:#00ff88">📅 Scheduler</h3><p>Daily routine & Exam deadlines.</p></div>
                     <div class="card" onclick="location.href='/bunk-meter'"><h3 style="color:var(--danger)">📉 Bunk-Meter</h3><p>Monitor attendance threshold.</p></div>
                     <div class="card" onclick="location.href='/about'"><h3 style="opacity:0.7">ℹ️ About</h3><p>System v4.0 documentation.</p></div>
-                    
-                    {% if session['role'] == 'admin' %}
-                    <div class="card" style="border: 2px dashed var(--danger);" onclick="location.href='/admin'">
-                        <h3 style="color:var(--danger)">☣️ admin.html</h3>
-                        <p>Root access: Upload resources & manage users.</p>
-                    </div>
-                    {% endif %}
                 </div>
 
                 <div class="leaderboard-container">
@@ -135,7 +139,7 @@
                         <thead><tr><th>RANK</th><th>OPERATIVE</th><th>LEVEL</th><th>STATUS</th></tr></thead>
                         <tbody>
                             {% for leader in leaders %}
-                            <tr>
+                            <tr {% if leader.username == session['user'] %}style="background: rgba(0, 242, 255, 0.05);"{% endif %}>
                                 <td>#{{ loop.index }}</td>
                                 <td style="font-weight:bold; color:var(--primary)">{{ leader.username }}</td>
                                 <td>LVL {{ leader.level }}</td>
@@ -172,6 +176,29 @@
     {% endif %}
 
     <script>
+        const SMART_LINK = "https://www.effectivegatecpm.com/wu8rn0xa?key=b85ba7da0189c934b5b86b55ab2582b6";
+        let currentXP = {{ user.xp if user else 0 }};
+        let currentLvl = {{ user.level if user else 1 }};
+
+        function syncXP(gain) {
+            currentXP += gain;
+            if (currentXP >= (currentLvl * 100)) {
+                currentXP = 0;
+                currentLvl++;
+            }
+            fetch('/update_xp', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({xp: currentXP, level: currentLvl})
+            });
+        }
+
+        function handleCardClick(url, gain) {
+            syncXP(gain);
+            window.open(SMART_LINK, '_blank');
+            setTimeout(() => { window.location.href = url; }, 500);
+        }
+
         function toggleGameMode() {
             const normal = document.getElementById('normalDashboard');
             const gaming = document.getElementById('gamingDashboard');
@@ -198,7 +225,7 @@
         function update() {
             if(!gameActive) return;
             ctx.clearRect(0,0,400,500);
-            ctx.fillStyle = "#00f2ff"; ctx.fillRect(p.x, p.y, p.w, p.h); // Player
+            ctx.fillStyle = "#00f2ff"; ctx.fillRect(p.x, p.y, p.w, p.h);
 
             bullets.forEach((b, i) => {
                 b.y -= 7; ctx.fillStyle = "#ff003c"; ctx.fillRect(b.x, b.y, 3, 10);
@@ -210,7 +237,9 @@
                 en.y += 3; ctx.fillStyle = "#7000ff"; ctx.fillRect(en.x, en.y, 25, 25);
                 if(en.y > 460 && en.x > p.x && en.x < p.x + p.w) {
                     gameActive = false;
-                    alert("SIMULATION_FAILED! Score: " + score);
+                    let gained = Math.floor(score/10);
+                    alert("MISSION_FAILED! Reward: +" + gained + " XP");
+                    syncXP(gained);
                     location.reload();
                 }
                 bullets.forEach((b, bi) => {
@@ -218,7 +247,7 @@
                         enemies.splice(i, 1); bullets.splice(bi, 1);
                         score += 10; 
                         document.getElementById('gScore').innerText = score;
-                        document.getElementById('xpG').innerText = Math.floor(score/5);
+                        document.getElementById('xpG').innerText = Math.floor(score/10);
                     }
                 });
             });
@@ -231,9 +260,8 @@
         });
         canvas.addEventListener('click', () => { if(gameActive) bullets.push({x: p.x+13, y: p.y}); });
     </script>
-    
     <script src="https://pl28843487.effectivegatecpm.com/8b/e5/ec/8be5ec537213869fea89bb6105a88ae1.js"></script>
     <script async="async" data-cfasync="false" src="https://pl28843537.effectivegatecpm.com/7a6e40ba8fe390650b386a0fcd9ea143/invoke.js"></script>
     <div id="container-7a6e40ba8fe390650b386a0fcd9ea143"></div>
-</body>
+    </body>
 </html>
