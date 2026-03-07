@@ -6,9 +6,9 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <title>PYQ Archive | Student Hub V2 Pro</title>
 </head>
-<body style="background: #05080a; color: white;">
-    <nav class="navbar" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; border-bottom: 1px solid #00f2ff;">
-        <a href="/" class="logo" style="font-family:'Orbitron'; color:#00f2ff; text-decoration:none;">HUB.OS</a>
+<body style="background: #05080a; color: white; font-family: 'Share Tech Mono', monospace;">
+    <nav class="navbar" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; border-bottom: 1px solid #00f2ff; background: rgba(0,0,0,0.9);">
+        <a href="/" class="logo" style="font-family:'Orbitron'; color:#00f2ff; text-decoration:none; font-weight: bold;">HUB.OS</a>
         <div class="nav-links">
             <a href="/" style="color:#fff; text-decoration:none; margin-right:15px; font-size:0.8rem;">Dashboard</a>
             <span id="navLvl" style="background:#7000ff; padding:2px 8px; border-radius:5px; font-size:0.7rem; color:#fff; font-weight:bold;">
@@ -18,29 +18,41 @@
     </nav>
 
     <div style="max-width: 1000px; margin: 0 auto; padding: 40px 20px;">
-        <h1 style="font-family:'Orbitron'; color:#00f2ff; text-align:center; text-transform:uppercase;">PYQ_<span>ARCHIVE_2026</span></h1>
-        <p style="text-align:center; opacity:0.7; font-size:0.9rem; margin-bottom:20px;">Official Board Papers & Topper Notes - Neural Pattern</p>
+        <h1 style="font-family:'Orbitron'; color:#00f2ff; text-align:center; text-transform:uppercase; letter-spacing: 2px;">PYQ_<span>VAULT_2026</span></h1>
+        <p style="text-align:center; opacity:0.7; font-size:0.8rem; margin-bottom:40px;">Neural Directory: Grouped by Examination Modules</p>
         
-        <div class="grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top:30px;">
-            {% if items %}
-                {% for item in items %}
-                <div class="card" style="text-align:left; border: 1px solid rgba(0, 242, 255, 0.3); background: rgba(0,242,255,0.05); padding: 20px; border-radius: 10px; transition: 0.3s; position: relative; overflow: hidden;">
-                    <h3 style="margin-bottom:5px; color:#fff; font-family:'Orbitron';">{{ item.subject|upper }}</h3>
-                    <p style="font-size:0.7rem; opacity:0.6; margin-bottom:15px; color:#00f2ff;">Premium Study Module (Verified)</p>
-                    
-                    <button onclick="handleDownload('{{ item.url }}')" class="btn-premium" style="width:100%; background:#00f2ff; border:none; padding:12px; border-radius:5px; cursor:pointer; font-weight:bold; color:#000; text-transform:uppercase; font-family:'Orbitron';">
-                        ACCESS MODULE (+15 XP)
-                    </button>
-                    
-                    {% if session['role'] == 'admin' %}
-                        <a href="/delete/pyq/{{ item['_id'] }}" style="color:#ff4444; font-size:0.6rem; display:block; margin-top:15px; text-decoration:none; text-align:right;">[SYSTEM: DELETE_POST]</a>
-                    {% endif %}
+        <div class="grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px;">
+            {% if folders %}
+                {% for folder_name, docs in folders.items() %}
+                <div class="folder-card" style="border: 1px solid rgba(0, 242, 255, 0.3); background: rgba(0,242,255,0.03); padding: 25px; border-radius: 15px; position: relative;">
+                    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                        <span style="font-size: 1.5rem; margin-right: 10px;">📂</span>
+                        <div>
+                            <h3 style="margin:0; color:#fff; font-family:'Orbitron'; font-size: 1rem;">{{ folder_name|upper }}</h3>
+                            <p style="margin:0; font-size:0.6rem; color:#00f2ff; opacity: 0.8;">SUBJECT: {{ docs[0].subject|upper }}</p>
+                        </div>
+                    </div>
+
+                    <div class="file-list" style="background: rgba(0,0,0,0.3); border-radius: 10px; padding: 10px;">
+                        {% for doc in docs %}
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <span style="font-size: 0.75rem; color: #ddd;">📄 Neural_Set_{{ loop.index }}</span>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <button onclick="handleDownload('{{ doc.url }}')" style="background:#00f2ff; border:none; padding:5px 12px; border-radius:4px; cursor:pointer; font-weight:bold; font-size:0.6rem; font-family:'Orbitron';">GET (+15 XP)</button>
+                                
+                                {% if session['role'] == 'admin' %}
+                                <a href="/delete/pyq/{{ doc['_id'] }}" style="color:#ff4444; font-size:0.6rem; text-decoration:none;">[DEL]</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
                 </div>
                 {% endfor %}
             {% else %}
-                <div style="grid-column: 1/-1; text-align: center; padding: 50px; opacity: 0.5;">
-                    <h3>[ SYSTEM_EMPTY ]</h3>
-                    <p>No PYQs found in neural vault. Admin upload required.</p>
+                <div style="grid-column: 1/-1; text-align: center; padding: 80px; border: 1px dashed rgba(0,242,255,0.2);">
+                    <h3 style="color: #00f2ff;">[ SYSTEM_IDLE ]</h3>
+                    <p style="opacity: 0.5;">No encrypted modules found in database.</p>
                 </div>
             {% endif %}
         </div>
@@ -49,37 +61,28 @@
     <script>
         const SMART_LINK = "https://www.effectivegatecpm.com/wu8rn0xa?key=b85ba7da0189c934b5b86b55ab2582b6";
         
-        // Fetch current stats from session/backend safely
         let currentXP = {{ session.get('xp', 0) }};
         let currentLvl = {{ session.get('level', 1) }};
 
         function handleDownload(fileUrl) {
-            // 1. XP Calculation
             currentXP += 15;
             if(currentXP >= currentLvl * 100) {
                 currentXP = 0;
                 currentLvl++;
-                alert("🚀 CORE UPGRADE! New Level: " + currentLvl);
+                alert("🚀 NEURAL UPGRADE: Level " + currentLvl + " Achieved!");
             }
 
-            // 2. Sync to MongoDB (Backend Update)
             fetch('/update_xp', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({xp: currentXP, level: currentLvl})
             });
 
-            // 3. Monetization (Adsterra)
-            window.open(AD_LINK, '_blank');
+            window.open(SMART_LINK, '_blank');
 
-            // 4. File Access
             setTimeout(() => {
-                if(fileUrl && fileUrl !== "") {
-                    window.location.href = fileUrl; 
-                } else {
-                    alert("Module Link Corrupted. Contact Admin.");
-                }
-            }, 1200);
+                if(fileUrl) { window.location.href = fileUrl; }
+            }, 1500);
         }
     </script>
 </body>

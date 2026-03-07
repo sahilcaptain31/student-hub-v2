@@ -10,27 +10,34 @@
         <a href="/" style="color: white; text-decoration: none;">[ EXIT_ROOT ]</a>
     </nav>
 
-    <div class="auth-container" style="display: flex; justify-content: center; align-items: center; height: 80vh;">
-        <div class="auth-card" style="background: rgba(255, 0, 60, 0.05); border: 1px solid #ff003c; padding: 30px; border-radius: 12px; width: 400px;">
-            <h3 style="font-family: 'Orbitron'; color: #ff003c; text-align: center;">UPLOAD_CORE_RESOURCE</h3>
+    <div class="auth-container" style="display: flex; justify-content: center; align-items: center; height: 90vh;">
+        <div class="auth-card" style="background: rgba(255, 0, 60, 0.05); border: 1px solid #ff003c; padding: 30px; border-radius: 12px; width: 420px; box-shadow: 0 0 20px rgba(255, 0, 60, 0.1);">
+            <h3 style="font-family: 'Orbitron'; color: #ff003c; text-align: center; margin-bottom: 25px; letter-spacing: 2px;">UPLOAD_CORE_RESOURCE</h3>
             
             <form action="/upload" method="post">
-                <p style="font-size: 0.7rem; opacity: 0.6; margin-bottom: 5px;">SELECT MODULE:</p>
-                <select name="type" style="width: 100%; padding: 10px; background: #000; color: white; border: 1px solid #ff003c; margin-bottom: 15px;">
+                <p style="font-size: 0.7rem; opacity: 0.6; margin-bottom: 5px; color: #ff003c;">[01] SELECT_MODULE:</p>
+                <select name="type" style="width: 100%; padding: 12px; background: #000; color: white; border: 1px solid #ff003c; margin-bottom: 15px; font-family: 'Share Tech Mono';">
                     <option value="notes">Notes Section</option>
                     <option value="pyq">PYQ Section (Previous Papers)</option>
                 </select>
 
-                <p style="font-size: 0.7rem; opacity: 0.6; margin-bottom: 5px;">SUBJECT_NAME:</p>
-                <input type="text" name="subject" placeholder="e.g. Physics Class 12" required 
-                       style="width: 100%; padding: 10px; background: #000; color: white; border: 1px solid #ff003c; margin-bottom: 15px;">
+                <p style="font-size: 0.7rem; opacity: 0.6; margin-bottom: 5px; color: #ff003c;">[02] SUBJECT_NAME:</p>
+                <input type="text" name="subject" placeholder="e.g. Physics" required 
+                       style="width: 100%; padding: 12px; background: #000; color: white; border: 1px solid #ff003c; margin-bottom: 15px; box-sizing: border-box;">
 
-                <p style="font-size: 0.7rem; opacity: 0.6; margin-bottom: 5px;">RESOURCE_URL (Google Drive/PDF Link):</p>
+                <p style="font-size: 0.7rem; opacity: 0.6; margin-bottom: 5px; color: #ff003c;">[03] FOLDER_NAME (Grouping ID):</p>
+                <input type="text" name="folder_name" placeholder="e.g. Board Paper 2024" required 
+                       style="width: 100%; padding: 12px; background: #000; color: white; border: 1px solid #ff003c; margin-bottom: 15px; box-sizing: border-box;">
+                <small style="display: block; font-size: 0.6rem; color: #888; margin-top: -10px; margin-bottom: 15px;">*Same folder name will group items together.</small>
+
+                <p style="font-size: 0.7rem; opacity: 0.6; margin-bottom: 5px; color: #ff003c;">[04] RESOURCE_URL (Direct Link):</p>
                 <input type="url" name="file_url" placeholder="https://drive.google.com/..." required 
-                       style="width: 100%; padding: 10px; background: #000; color: white; border: 1px solid #ff003c; margin-bottom: 20px;">
+                       style="width: 100%; padding: 12px; background: #000; color: white; border: 1px solid #ff003c; margin-bottom: 25px; box-sizing: border-box;">
 
-                <button type="submit" class="btn-premium" 
-                        style="width: 100%; background: #ff003c; color: white; border: none; padding: 12px; cursor: pointer; font-family: 'Orbitron'; font-weight: bold;">
+                <button type="submit" 
+                        style="width: 100%; background: #ff003c; color: white; border: none; padding: 15px; cursor: pointer; font-family: 'Orbitron'; font-weight: bold; letter-spacing: 1px; transition: 0.3s;"
+                        onmouseover="this.style.background='white'; this.style.color='#ff003c';"
+                        onmouseout="this.style.background='#ff003c'; this.style.color='white';">
                     PUSH_TO_DATABASE
                 </button>
             </form>

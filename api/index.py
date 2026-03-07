@@ -126,15 +126,16 @@ def notes():
 
 @app.route("/pyq")
 def pyq():
-    # Database ke 'pyq' collection se saare items uthao
     items = list(db.pyq.find())
+    # Grouping Logic: Folder ke naam se items ko ikatha karna
+    folders = {}
+    for item in items:
+        f_name = item.get('folder', 'General Resources')
+        if f_name not in folders:
+            folders[f_name] = []
+        folders[f_name].append(item)
     
-    # Agar user login hai toh uska data bhi bhejo (XP sync ke liye)
-    user_data = None
-    if "user" in session:
-        user_data = db.users.find_one({"username": session["user"]})
-        
-    return render_template("pyq.html", items=items, user=user_data)
+    return render_template("pyq.html", folders=folders)
 
 @app.route("/tools")
 def tools():
@@ -214,13 +215,19 @@ def upload():
         subj = request.form["subject"]
         doc_type = request.form["type"] 
         file_url = request.form["file_url"]
+        # Naya Folder Option
+        folder_name = request.form.get("folder_name", "General Resources")
         
         if file_url:
             db[doc_type].insert_one({
                 "subject": subj, 
-                "url": file_url
+                "folder": folder_name,
+                "url": file_url,
+                "created_at": datetime.utcnow()
             })
     return redirect("/admin")
+
+
 
 @app.route("/delete/<doc_type>/<id>")
 def delete_item(doc_type, id):
