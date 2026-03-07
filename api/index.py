@@ -127,10 +127,10 @@ def notes():
 @app.route("/pyq")
 def pyq():
     items = list(db.pyq.find())
-    # Grouping Logic: Folder ke naam se items ko ikatha karna
     folders = {}
     for item in items:
-        f_name = item.get('folder', 'General Resources')
+        # Agar folder field missing hai toh 'Other Papers' mein dal do
+        f_name = item.get('folder') or 'Other Papers'
         if f_name not in folders:
             folders[f_name] = []
         folders[f_name].append(item)
@@ -215,13 +215,14 @@ def upload():
         subj = request.form["subject"]
         doc_type = request.form["type"] 
         file_url = request.form["file_url"]
-        # Naya Folder Name field
-        folder_name = request.form.get("folder_name", "General Resources")
+        
+        # Folder Logic: Sirf PYQ ke liye input uthayega, Notes ke liye null rakhega
+        folder_name = request.form.get("folder_name") if doc_type == "pyq" else None
         
         if file_url:
             db[doc_type].insert_one({
                 "subject": subj, 
-                "folder": folder_name, # Folder data database mein jayega
+                "folder": folder_name, # PYQ ke liye folder save hoga, Notes ke liye None
                 "url": file_url,
                 "created_at": datetime.utcnow()
             })

@@ -4,174 +4,55 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <title>ADMIN_CONTROL | Neural Vault</title>
     <style>
-        :root {
-            --primary: #ff003c;
-            --secondary: #00f2ff;
-            --bg: #05080a;
-            --card-bg: rgba(255, 255, 255, 0.05);
-        }
-        body {
-            background: var(--bg);
-            color: white;
-            font-family: 'Share Tech Mono', sans-serif;
-            padding: 40px;
-            margin: 0;
-        }
-        .admin-nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--primary);
-            padding-bottom: 20px;
-            margin-bottom: 30px;
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-        }
-        .card {
-            background: var(--card-bg);
-            border: 1px solid #333;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        .input-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            font-size: 0.7rem;
-            color: var(--primary);
-            margin-bottom: 8px;
-            letter-spacing: 1px;
-        }
-        input, select {
-            width: 100%;
-            padding: 15px;
-            background: #111;
-            color: white;
-            border: 1px solid #333;
-            border-radius: 12px;
-            font-family: 'Share Tech Mono', sans-serif;
-            box-sizing: border-box;
-        }
-        input:focus {
-            border-color: var(--primary);
-            outline: none;
-        }
-        #folderDiv {
-            border: 1px dashed var(--secondary);
-            padding: 15px;
-            border-radius: 12px;
-            background: rgba(0, 242, 255, 0.05);
-            transition: all 0.3s ease;
-        }
-        .btn-deploy {
-            width: 100%;
-            background: linear-gradient(90deg, #ff003c 0%, #ff4d00 100%);
-            color: white;
-            border: none;
-            padding: 18px;
-            border-radius: 12px;
-            font-family: 'Orbitron', sans-serif;
-            font-weight: bold;
-            cursor: pointer;
-            letter-spacing: 2px;
-            transition: 0.3s;
-        }
-        .btn-deploy:hover {
-            transform: scale(1.02);
-            box-shadow: 0 0 20px rgba(255, 0, 60, 0.4);
-        }
+        :root { --primary: #ff003c; --secondary: #00f2ff; --bg: #05080a; }
+        body { background: var(--bg); color: white; font-family: 'Share Tech Mono', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: rgba(255, 255, 255, 0.05); border: 1px solid #333; padding: 40px; border-radius: 20px; width: 450px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        label { display: block; font-size: 0.7rem; color: var(--primary); margin-bottom: 8px; letter-spacing: 1px; }
+        input, select { width: 100%; padding: 15px; background: #111; color: white; border: 1px solid #333; border-radius: 12px; margin-bottom: 20px; box-sizing: border-box; font-family: 'Share Tech Mono'; }
+        #folderDiv { display: none; border: 1px dashed var(--secondary); padding: 15px; border-radius: 12px; background: rgba(0, 242, 255, 0.05); margin-bottom: 20px; }
+        .btn-deploy { width: 100%; background: linear-gradient(90deg, #ff003c 0%, #ff4d00 100%); color: white; border: none; padding: 18px; border-radius: 12px; font-family: 'Orbitron'; font-weight: bold; cursor: pointer; transition: 0.3s; }
     </style>
 </head>
 <body>
+    <div class="card" style="border-color: var(--primary);">
+        <h3 style="font-family:'Orbitron'; text-align: center; margin-bottom: 30px;">CORE_UPLOAD_MODULE</h3>
+        <form action="/upload" method="post">
+            <label>[01] RESOURCE_TYPE</label>
+            <select id="moduleSelect" name="type" onchange="toggleFolderLogic()">
+                <option value="notes">Lecture Notes</option>
+                <option value="pyq">Previous Year Papers (PYQ)</option>
+            </select>
 
-    <div class="admin-nav">
-        <h1 style="margin:0; font-family:'Orbitron'; color: var(--primary);">ADMIN_OS_V2</h1>
-        <a href="/" style="color: white; text-decoration: none; border: 1px solid white; padding: 8px 15px; border-radius: 5px;">[ EXIT_ROOT ]</a>
-    </div>
+            <label>[02] SUBJECT_IDENTIFIER</label>
+            <input type="text" name="subject" placeholder="e.g. Applied Physics-II" required>
 
-    <div class="grid">
-        <div class="card" style="border-color: var(--primary);">
-            <h3 style="font-family:'Orbitron'; text-align: center; margin-top: 0;">CORE_UPLOAD_MODULE</h3>
-            
-            <form action="/upload" method="post">
-                <div class="input-group">
-                    <label>[01] RESOURCE_TYPE</label>
-                    <select id="moduleSelect" name="type" onchange="toggleFolderLogic()">
-                        <option value="notes">Lecture Notes</option>
-                        <option value="pyq">Previous Year Papers (PYQ)</option>
-                    </select>
-                </div>
-
-                <div class="input-group">
-                    <label>[02] SUBJECT_IDENTIFIER</label>
-                    <input type="text" name="subject" placeholder="e.g. Applied Physics-II" required>
-                </div>
-
-                <div id="folderDiv" style="display: none;" class="input-group">
-                    <label style="color: var(--secondary);">[03] GROUPING_FOLDER (PYQ ONLY)</label>
-                    <input type="text" id="folderInput" name="folder_name" placeholder="e.g. EndSem_2024" style="border-color: var(--secondary); color: var(--secondary);">
-                    <p style="font-size: 0.6rem; color: #888; margin-top: 5px;">*Items with same folder name appear together.</p>
-                </div>
-
-                <div class="input-group">
-                    <label>[04] DATA_SOURCE_URL</label>
-                    <input type="url" name="file_url" placeholder="https://drive.google.com/..." required>
-                </div>
-
-                <button type="submit" class="btn-deploy">PUSH_TO_DATABASE</button>
-            </form>
-        </div>
-
-        <div class="card">
-            <h3 style="font-family:'Orbitron';">ACTIVE_STATION_USERS</h3>
-            <div style="max-height: 400px; overflow-y: auto;">
-                <table style="width: 100%; border-collapse: collapse;">
-                    <tr style="text-align: left; color: var(--primary); font-size: 0.8rem;">
-                        <th style="padding: 10px;">USER</th>
-                        <th>LVL</th>
-                        <th>ROLE</th>
-                    </tr>
-                    {% for u in users %}
-                    <tr style="border-bottom: 1px solid #222;">
-                        <td style="padding: 12px 10px;">{{ u.username }}</td>
-                        <td>{{ u.level }}</td>
-                        <td style="color: {{ 'var(--primary)' if u.role == 'admin' else '#888' }}">{{ u.role }}</td>
-                    </tr>
-                    {% endfor %}
-                </table>
+            <div id="folderDiv">
+                <label style="color: var(--secondary);">[03] GROUPING_FOLDER (PYQ ONLY)</label>
+                <input type="text" id="folderInput" name="folder_name" placeholder="e.g. EndSem_2024" style="border-color: var(--secondary); color: var(--secondary);">
             </div>
-        </div>
+
+            <label>[04] DATA_SOURCE_URL</label>
+            <input type="url" name="file_url" placeholder="https://drive.google.com/..." required>
+
+            <button type="submit" class="btn-deploy">PUSH_TO_DATABASE</button>
+        </form>
     </div>
 
     <script>
         function toggleFolderLogic() {
-            const select = document.getElementById("moduleSelect");
-            const folderDiv = document.getElementById("folderDiv");
-            const folderInput = document.getElementById("folderInput");
-
-            // Debugging ke liye console log
-            console.log("Selected Type:", select.value);
-
+            var select = document.getElementById("moduleSelect");
+            var div = document.getElementById("folderDiv");
+            var input = document.getElementById("folderInput");
             if (select.value === "pyq") {
-                folderDiv.style.display = "block";
-                folderInput.required = true;
-                folderInput.focus();
+                div.style.display = "block";
+                input.required = true;
             } else {
-                folderDiv.style.display = "none";
-                folderInput.required = false;
-                folderInput.value = ""; // Clear if switched back to notes
+                div.style.display = "none";
+                input.required = false;
+                input.value = "";
             }
         }
-
-        // Page load par check karega (Safety check)
-        window.onload = function() {
-            toggleFolderLogic();
-        };
+        window.onload = toggleFolderLogic;
     </script>
 </body>
 </html>
