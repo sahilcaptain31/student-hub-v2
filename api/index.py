@@ -211,22 +211,38 @@ def admin():
 
 @app.route("/upload", methods=["POST"])
 def upload():
-    if session.get("role") == "admin":
-        subj = request.form["subject"]
-        doc_type = request.form["type"] 
-        file_url = request.form["file_url"]
+    # 1. Access Check: Role 'admin' hona mandatory hai
+    if session.get("role") != "admin":
+        return "<h1>403: ACCESS DENIED</h1><p>Bhai, pehle admin login karo!</p>", 403
+
+    try:
+        # 2. Form se data nikalna
+        subj = request.form.get("subject")
+        doc_type = request.form.get("type") # 'notes' ya 'pyq'
+        file_url = request.form.get("file_url")
         
-        # Folder Logic: Sirf PYQ ke liye input uthayega, Notes ke liye null rakhega
+        # 3. Smart Folder Logic
+        # Agar doc_type 'pyq' hai, tabhi folder name uthayega, warna None rahega
         folder_name = request.form.get("folder_name") if doc_type == "pyq" else None
         
-        if file_url:
-            db[doc_type].insert_one({
-                "subject": subj, 
-                "folder": folder_name, # PYQ ke liye folder save hoga, Notes ke liye None
-                "url": file_url,
-                "created_at": datetime.utcnow()
-            })
-    return redirect("/admin")
+        # 4. Mandatory Fields Check
+        if not subj or not file_url:
+            return "Subject aur URL dena zaroori hai!", 400
+
+        # 5. Database Entry
+        db[doc_type].insert_one({
+            "subject": subj, 
+            "folder": folder_name, 
+            "url": file_url,
+            "created_at": datetime.utcnow()
+        })
+        
+        print(f"Success: {doc_type} uploaded for {subj}")
+        return redirect("/admin")
+
+    except Exception as e:
+        print(f"Error during upload: {e}")
+        return f"Kuch gadbad ho gayi: {e}", 500
 
 
 
