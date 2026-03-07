@@ -16,7 +16,7 @@
             
             <form action="/upload" method="post">
                 <p style="font-size: 0.7rem; opacity: 0.6; margin-bottom: 5px; color: #ff003c;">[01] SELECT_MODULE:</p>
-                <select name="type" style="width: 100%; padding: 12px; background: #000; color: white; border: 1px solid #ff003c; margin-bottom: 15px; font-family: 'Share Tech Mono';">
+                <select id="moduleType" name="type" onchange="toggleFolderInput()" style="width: 100%; padding: 12px; background: #000; color: white; border: 1px solid #ff003c; margin-bottom: 15px; font-family: 'Share Tech Mono';">
                     <option value="notes">Notes Section</option>
                     <option value="pyq">PYQ Section (Previous Papers)</option>
                 </select>
@@ -25,10 +25,12 @@
                 <input type="text" name="subject" placeholder="e.g. Physics" required 
                        style="width: 100%; padding: 12px; background: #000; color: white; border: 1px solid #ff003c; margin-bottom: 15px; box-sizing: border-box;">
 
-                <p style="font-size: 0.7rem; opacity: 0.6; margin-bottom: 5px; color: #ff003c;">[03] FOLDER_NAME (Grouping ID):</p>
-                <input type="text" name="folder_name" placeholder="e.g. Board Paper 2024" required 
-                       style="width: 100%; padding: 12px; background: #000; color: white; border: 1px solid #ff003c; margin-bottom: 15px; box-sizing: border-box;">
-                <small style="display: block; font-size: 0.6rem; color: #888; margin-top: -10px; margin-bottom: 15px;">*Same folder name will group items together.</small>
+                <div id="folderSection" style="display: none;">
+                    <p style="font-size: 0.7rem; opacity: 0.6; margin-bottom: 5px; color: #00f2ff;">[03] FOLDER_NAME (Grouping ID):</p>
+                    <input type="text" id="folderInput" name="folder_name" placeholder="e.g. Board Paper 2024" 
+                           style="width: 100%; padding: 12px; background: #000; color: #00f2ff; border: 1px solid #00f2ff; margin-bottom: 15px; box-sizing: border-box;">
+                    <small style="display: block; font-size: 0.6rem; color: #888; margin-top: -10px; margin-bottom: 15px;">*Same folder name will group items together.</small>
+                </div>
 
                 <p style="font-size: 0.7rem; opacity: 0.6; margin-bottom: 5px; color: #ff003c;">[04] RESOURCE_URL (Direct Link):</p>
                 <input type="url" name="file_url" placeholder="https://drive.google.com/..." required 
@@ -43,5 +45,27 @@
             </form>
         </div>
     </div>
+
+    <script>
+        function toggleFolderInput() {
+            const selectBox = document.getElementById('moduleType');
+            const folderSection = document.getElementById('folderSection');
+            const folderInput = document.getElementById('folderInput');
+
+            if (selectBox.value === 'pyq') {
+                // Show folder input for PYQs
+                folderSection.style.display = 'block';
+                folderInput.setAttribute('required', 'required');
+            } else {
+                // Hide folder input for Notes
+                folderSection.style.display = 'none';
+                folderInput.removeAttribute('required');
+                folderInput.value = ""; // Clear value when hidden
+            }
+        }
+
+        // Initialize on page load
+        window.onload = toggleFolderInput;
+    </script>
 </body>
 </html>
