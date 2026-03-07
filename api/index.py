@@ -215,13 +215,13 @@ def upload():
         subj = request.form["subject"]
         doc_type = request.form["type"] 
         file_url = request.form["file_url"]
-        # Naya Folder Option
+        # Naya Folder Name field
         folder_name = request.form.get("folder_name", "General Resources")
         
         if file_url:
             db[doc_type].insert_one({
                 "subject": subj, 
-                "folder": folder_name,
+                "folder": folder_name, # Folder data database mein jayega
                 "url": file_url,
                 "created_at": datetime.utcnow()
             })
