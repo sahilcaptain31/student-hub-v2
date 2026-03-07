@@ -1,19 +1,38 @@
 <!DOCTYPE html>
 <html>
-<head><link rel="stylesheet" href="../static/css/style.css"></head>
-<body>
-    <nav class="navbar"><a href="/" class="logo">ADMIN.VAULT</a><a href="/">Exit</a></nav>
-    <div class="auth-container">
-        <div class="auth-card">
-            <h3>Upload New Resource</h3>
-            <form method="post" enctype="multipart/form-data">
-                <select name="section">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>ADMIN_CONTROL | Neural Vault</title>
+</head>
+<body style="background: #05080a; color: white; font-family: 'Share Tech Mono', sans-serif;">
+    <nav class="navbar" style="display: flex; justify-content: space-between; padding: 15px 5%; border-bottom: 1px solid #ff003c;">
+        <a href="/" class="logo" style="color: #ff003c; text-decoration: none; font-family: 'Orbitron'; font-weight: bold;">ADMIN.VAULT</a>
+        <a href="/" style="color: white; text-decoration: none;">[ EXIT_ROOT ]</a>
+    </nav>
+
+    <div class="auth-container" style="display: flex; justify-content: center; align-items: center; height: 80vh;">
+        <div class="auth-card" style="background: rgba(255, 0, 60, 0.05); border: 1px solid #ff003c; padding: 30px; border-radius: 12px; width: 400px;">
+            <h3 style="font-family: 'Orbitron'; color: #ff003c; text-align: center;">UPLOAD_CORE_RESOURCE</h3>
+            
+            <form action="/upload" method="post">
+                <p style="font-size: 0.7rem; opacity: 0.6; margin-bottom: 5px;">SELECT MODULE:</p>
+                <select name="type" style="width: 100%; padding: 10px; background: #000; color: white; border: 1px solid #ff003c; margin-bottom: 15px;">
                     <option value="notes">Notes Section</option>
-                    <option value="pyq">PYQ Section</option>
+                    <option value="pyq">PYQ Section (Previous Papers)</option>
                 </select>
-                <input type="text" name="subject" placeholder="Subject Name" required>
-                <input type="file" name="file" required>
-                <button type="submit" class="btn-premium" style="width:100%">Upload to Database</button>
+
+                <p style="font-size: 0.7rem; opacity: 0.6; margin-bottom: 5px;">SUBJECT_NAME:</p>
+                <input type="text" name="subject" placeholder="e.g. Physics Class 12" required 
+                       style="width: 100%; padding: 10px; background: #000; color: white; border: 1px solid #ff003c; margin-bottom: 15px;">
+
+                <p style="font-size: 0.7rem; opacity: 0.6; margin-bottom: 5px;">RESOURCE_URL (Google Drive/PDF Link):</p>
+                <input type="url" name="file_url" placeholder="https://drive.google.com/..." required 
+                       style="width: 100%; padding: 10px; background: #000; color: white; border: 1px solid #ff003c; margin-bottom: 20px;">
+
+                <button type="submit" class="btn-premium" 
+                        style="width: 100%; background: #ff003c; color: white; border: none; padding: 12px; cursor: pointer; font-family: 'Orbitron'; font-weight: bold;">
+                    PUSH_TO_DATABASE
+                </button>
             </form>
         </div>
     </div>
