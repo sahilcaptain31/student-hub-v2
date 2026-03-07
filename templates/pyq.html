@@ -3,74 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../static/css/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <title>PYQ Archive | Student Hub V2 Pro</title>
 </head>
-<body>
-    <nav class="navbar">
-        <a href="/" class="logo">HUB.OS</a>
+<body style="background: #05080a; color: white;">
+    <nav class="navbar" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; border-bottom: 1px solid #00f2ff;">
+        <a href="/" class="logo" style="font-family:'Orbitron'; color:#00f2ff; text-decoration:none;">HUB.OS</a>
         <div class="nav-links">
-            <a href="/">Dashboard</a>
-            <span id="navLvl" style="background:var(--secondary); padding:2px 8px; border-radius:5px; font-size:0.7rem; color:#000; font-weight:bold;">LVL 1</span>
+            <a href="/" style="color:#fff; text-decoration:none; margin-right:15px; font-size:0.8rem;">Dashboard</a>
+            <span id="navLvl" style="background:#7000ff; padding:2px 8px; border-radius:5px; font-size:0.7rem; color:#fff; font-weight:bold;">
+                LVL {{ session.get('level', 1) }}
+            </span>
         </div>
     </nav>
 
     <div style="max-width: 1000px; margin: 0 auto; padding: 40px 20px;">
-        <h1 style="font-family:'Orbitron'; color:var(--secondary); text-align:center; text-transform:uppercase;">PYQ_<span>ARCHIVE_2023</span></h1>
-        <p style="text-align:center; opacity:0.7; font-size:0.9rem; margin-bottom:20px;">Official Board Papers & Topper Notes - Latest 2026 Pattern</p>
+        <h1 style="font-family:'Orbitron'; color:#00f2ff; text-align:center; text-transform:uppercase;">PYQ_<span>ARCHIVE_2026</span></h1>
+        <p style="text-align:center; opacity:0.7; font-size:0.9rem; margin-bottom:20px;">Official Board Papers & Topper Notes - Neural Pattern</p>
         
         <div class="grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top:30px;">
-            {% for item in items %}
-            <div class="card" style="text-align:left; border: 1px solid var(--secondary); background: rgba(0,0,0,0.3); padding: 20px; border-radius: 10px; transition: 0.3s; position: relative; overflow: hidden;">
-                <h3 style="margin-bottom:5px; color:#fff;">{{ item['subject'] }}</h3>
-                <p style="font-size:0.7rem; opacity:0.6; margin-bottom:15px; color:var(--secondary);">Premium Study Material (Verified)</p>
-                
-                <button onclick="handleDownload('{{ item['url'] }}')" class="btn-premium" style="width:100%; background:var(--secondary); border:none; padding:12px; border-radius:5px; cursor:pointer; font-weight:bold; color:#000; text-transform:uppercase;">
-                    DOWNLOAD (+10 XP)
-                </button>
-                
-                {% if session['role'] == 'admin' %}
-                    <a href="/delete/pyq/{{ item['_id'] }}" style="color:#ff4444; font-size:0.6rem; display:block; margin-top:15px; text-decoration:none; text-align:right;">[ADMIN: DELETE]</a>
-                {% endif %}
-            </div>
-            {% endfor %}
+            {% if items %}
+                {% for item in items %}
+                <div class="card" style="text-align:left; border: 1px solid rgba(0, 242, 255, 0.3); background: rgba(0,242,255,0.05); padding: 20px; border-radius: 10px; transition: 0.3s; position: relative; overflow: hidden;">
+                    <h3 style="margin-bottom:5px; color:#fff; font-family:'Orbitron';">{{ item.subject|upper }}</h3>
+                    <p style="font-size:0.7rem; opacity:0.6; margin-bottom:15px; color:#00f2ff;">Premium Study Module (Verified)</p>
+                    
+                    <button onclick="handleDownload('{{ item.url }}')" class="btn-premium" style="width:100%; background:#00f2ff; border:none; padding:12px; border-radius:5px; cursor:pointer; font-weight:bold; color:#000; text-transform:uppercase; font-family:'Orbitron';">
+                        ACCESS MODULE (+15 XP)
+                    </button>
+                    
+                    {% if session['role'] == 'admin' %}
+                        <a href="/delete/pyq/{{ item['_id'] }}" style="color:#ff4444; font-size:0.6rem; display:block; margin-top:15px; text-decoration:none; text-align:right;">[SYSTEM: DELETE_POST]</a>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            {% else %}
+                <div style="grid-column: 1/-1; text-align: center; padding: 50px; opacity: 0.5;">
+                    <h3>[ SYSTEM_EMPTY ]</h3>
+                    <p>No PYQs found in neural vault. Admin upload required.</p>
+                </div>
+            {% endif %}
         </div>
     </div>
 
     <script>
-        // Game Engine: XP and Level System
-        let xp = parseInt(localStorage.getItem('hXP')) || 0;
-        let lvl = parseInt(localStorage.getItem('hLVL')) || 1;
-        document.getElementById('navLvl').innerText = "LVL " + lvl;
-
-        // Tera Smart Link (Adsterra)
         const SMART_LINK = "https://www.effectivegatecpm.com/wu8rn0xa?key=b85ba7da0189c934b5b86b55ab2582b6";
+        
+        // Fetch current stats from session/backend safely
+        let currentXP = {{ session.get('xp', 0) }};
+        let currentLvl = {{ session.get('level', 1) }};
 
         function handleDownload(fileUrl) {
-            // 1. XP Update Logic
-            xp += 10; 
-            if(xp >= lvl * 100) { 
-                xp = 0; 
-                lvl++; 
-                alert("🚀 LEVEL UP! You reached Level " + lvl + ". Keep downloading to earn more rewards!"); 
+            // 1. XP Calculation
+            currentXP += 15;
+            if(currentXP >= currentLvl * 100) {
+                currentXP = 0;
+                currentLvl++;
+                alert("🚀 CORE UPGRADE! New Level: " + currentLvl);
             }
-            localStorage.setItem('hXP', xp);
-            localStorage.setItem('hLVL', lvl);
-            document.getElementById('navLvl').innerText = "LVL " + lvl;
-            
-            // 2. Revenue Generation (Adsterra Smart Link)
-            // Ye ek naye tab mein ad khol dega
-            window.open(SMART_LINK, '_blank');
 
-            // 3. Actual File Download
-            // 1.5 second ka delay taki ad sahi se load ho jaye aur tera revenue pakka ho jaye
+            // 2. Sync to MongoDB (Backend Update)
+            fetch('/update_xp', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({xp: currentXP, level: currentLvl})
+            });
+
+            // 3. Monetization (Adsterra)
+            window.open(AD_LINK, '_blank');
+
+            // 4. File Access
             setTimeout(() => {
-                if(fileUrl) {
+                if(fileUrl && fileUrl !== "") {
                     window.location.href = fileUrl; 
                 } else {
-                    alert("System Update: Link will be available shortly.");
+                    alert("Module Link Corrupted. Contact Admin.");
                 }
-            }, 1500);
+            }, 1200);
         }
     </script>
 </body>
