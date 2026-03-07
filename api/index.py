@@ -31,7 +31,13 @@ db = client.student_hub_db
 @app.route("/")
 def home():
     leaders = list(db.users.find({}, {"_id": 0, "username": 1, "level": 1}).sort([("level", -1), ("xp", -1)]).limit(5))
-    return render_template("index.html", leaders=leaders)
+    
+    # Naya logic: Agar user logged in hai, toh uska data bhi bhejo
+    user_data = None
+    if "user" in session:
+        user_data = db.users.find_one({"username": session["user"]})
+        
+    return render_template("index.html", leaders=leaders, user=user_data)
 
 # Default Avatar Links
 BOY_AVATAR = "https://raw.githubusercontent.com/Arunanshu/Student-Hub-Assets/main/boy_avatar.jpg"
